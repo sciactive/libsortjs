@@ -1,7 +1,7 @@
 /**
  * LibSort.js
  *
- * Version 0.0.0-dev
+ * Version 0.0.1-dev
  * Apache 2.0 License
  * Copyright 2017 Hunter Perrin
  */
