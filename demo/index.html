@@ -1,26 +1,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>LibSort.js Demo</title>
+  <title>LibSort.js</title>
   <style type="text/css">
     header, section {
-      margin: 30px 20px;
+      padding: 20px 10px;
     }
-    #output {
-      margin: 20px 0;
-      display: inline-flex;
-      width: auto;
-      flex: row;
-      align-items: stretch;
-      justify-content: flex-start;
-
-      color: #ccc;
+    #outputContainer, #visualizeContainer {
       font-size: 1.1em;
+      margin-top: 20px;
+      color: #ccc;
+    }
+    #output, #visualize {
       border: 1px solid #ccc;
       background: #333;
     }
+    #output {
+      display: inline-flex;
+      width: auto;
+      flex-direction: row;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
     #output pre {
       margin: 20px 25px;
+    }
+    #visualizeSection {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      align-items: stretch;
+      box-sizing: border-box;
+    }
+    #visualizeContainer {
+      position: relative;
+      flex-grow: 1;
+    }
+    #visualizeStats {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-size: .7em;
+    }
+    #visualize {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 2px;
+      overflow: hidden;
+      box-sizing: content-box;
+    }
+    #visualize div {
+      background: #ccc;
+      flex-grow: 1;
+      height: 100%;
+      transform-origin: bottom;
+    }
+    #visualize div.compare {
+      background-color: #f9ff87;
+    }
+    #visualize div.swap {
+      background-color: #ffa0a0;
+    }
+    #visualize div.sorted {
+      background-color: #a6ff8c;
     }
   </style>
   <script type="text/javascript" src="../src/libsort.js"></script>
@@ -28,38 +77,137 @@
 </head>
 <body>
   <header>
-    <h1>LibSort.js Demo</h1>
+    <h1>LibSort.js</h1>
   </header>
-  <section>
+  <section id="compareSection">
     <div>
-      Elements: <input type="number" id="elements" value="100000" />
-      <button onclick="doSort()">libsort</button>
+      Compare: <input type="number" id="compareElements" value="100000" />
+      <button onclick="doSort()">go</button>
     </div>
-    <div id="output">
-      <pre name="libsortjs"></pre>
-      <pre name="native"></pre>
-      <pre name="debug"></pre>
+    <div id="outputContainer">
+      <div id="output">
+        <pre name="libsortjs"></pre>
+        <pre name="native"></pre>
+        <pre name="debug"></pre>
+      </div>
+    </div>
+  </section>
+  <section id="visualizeSection">
+    <div>
+      Visualize: <input type="number" id="visualizeElements" value="100" />
+      Max Delta: <input type="number" id="visualizeMaxDelta" value="0" />
+      Delay: <input type="number" id="visualizeDelay" value="20" />
+      <button onclick="doVisualize()">go</button>
+    </div>
+    <div id="visualizeContainer">
+      <div id="visualize"></div>
+        <div id="visualizeStats">
+          Array Length: <span id="visualizeStatLength">0</span>
+          Comparisons: <span id="visualizeStatComparisons">0</span>
+          Swaps: <span id="visualizeStatSwaps">0</span>
+        </div>
     </div>
   </section>
   <script type="text/javascript">
+    // console.log(quicksort([5, 3, 6, 4, 1, 2]));
+    // console.log(quicksort([1, 1, 1, 1, 1, 1]));
+    // console.log(quicksort([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0]));
+    // console.log(quicksort([1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]));
+
+    function doVisualize() {
+      const count = parseInt(document.getElementById("visualizeElements").value);
+      const maxDelta = parseInt(document.getElementById("visualizeMaxDelta").value);
+      const delay = parseInt(document.getElementById("visualizeDelay").value);
+      document.getElementById("visualizeStatLength").textContent = count;
+      document.getElementById("visualizeStatComparisons").textContent = "0";
+      document.getElementById("visualizeStatSwaps").textContent = "0";
+      const visualize = document.getElementById("visualize");
+      visualize.innerHTML = "";
+      const children = [];
+      for (let i = 1; i <= count; i++) {
+        const el = document.createElement("div");
+        el.style.transform = "scaleY(" + (i / count) + ")";
+        el.libSortIndex = i;
+        children.push(el);
+      }
+      shuffle(children);
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < children.length; i++) {
+        frag.appendChild(children[i]);
+      }
+      visualize.appendChild(frag);
+      quicksort(children, {
+        maxDelta,
+        compareFunction: (a, b) => {
+          let aOrig, bOrig;
+          runInTime(() => {
+            a.classList.add("compare");
+            b.classList.add("compare");
+            document.getElementById("visualizeStatComparisons").textContent =
+              parseInt(document.getElementById("visualizeStatComparisons").textContent) + 1;
+          });
+          runInTime(() => {
+            a.classList.remove("compare");
+            b.classList.remove("compare");
+          }, delay);
+          if (a.libSortIndex < b.libSortIndex) return -1;
+          if (a.libSortIndex > b.libSortIndex) return 1;
+          return 0;
+        },
+        swapFunction: (arr, index1, index2) => {
+          let a = arr[index1], b = arr[index2], aOrig, bOrig;
+          runInTime(() => {
+            a.classList.add("swap");
+            b.classList.add("swap");
+            document.getElementById("visualizeStatSwaps").textContent =
+              parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
+          });
+          runInTime(() => {
+            // const aSibling = a.nextSibling;
+            // const bSibling = b.nextSibling;
+            // if (bSibling) {
+            //   visualize.insertBefore(a, bSibling);
+            // } else {
+            //   visualize.appendChild(a);
+            // }
+            // if (aSibling) {
+            //   visualize.insertBefore(b, aSibling);
+            // } else {
+            //   visualize.appendChild(b);
+            // }
+          	const temp = a.style.transform;
+            a.style.transform = b.style.transform;
+            b.style.transform = temp;
+          }, Math.floor(delay / 2));
+          runInTime(() => {
+            a.classList.remove("swap");
+            b.classList.remove("swap");
+          }, Math.floor(delay / 2));
+        	const temp = arr[index1].libSortIndex;
+          arr[index1].libSortIndex = arr[index2].libSortIndex;
+          arr[index2].libSortIndex = temp;
+        },
+        sortedCallbackFunction: (arr) => {
+          runInTime(() => {
+            _.forEach(arr, (el) => el.classList.add("sorted"));
+          });
+        }
+      });
+    }
+
     function doSort() {
       log("## LibSort.js Quicksort", "libsortjs", true);
       log("## Native Sort", "native", true);
       log("## Checking Array Equality\n", "debug", true);
 
-      // console.log(quicksort([5, 3, 6, 4, 1, 2]), "libsortjs");
-      // console.log(quicksort([1, 1, 1, 1, 1, 1]), "libsortjs");
-
       times = {};
 
-      const benchmarkSort = (sortFunc, shuffle, reverse, label) => {
-        var arr = [...Array(parseInt(document.getElementById("elements").value)).keys()];
-        //var arr = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0];
-        //var arr = [1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
-        if (shuffle) shuffle(arr);
-        if (reverse) arr.reverse();
+      const benchmarkSort = (sortFunc, shuffled, reversed, label) => {
+        var arr = [...Array(parseInt(document.getElementById("compareElements").value)).keys()];
+        if (shuffled) shuffle(arr);
+        if (reversed) arr.reverse();
         const start = window.performance.now();
-        const ret = sortFunc(arr, defaultComparator);
+        const ret = sortFunc(arr, defaultCompareFunction);
         const end = window.performance.now();
         const time = _.round(end - start, 3);
         log("\nRun Time: " + time + "ms", label);
@@ -69,22 +217,6 @@
 
         //log(ret, label)
         return ret;
-
-        function shuffle(array) {
-            let counter = array.length;
-            // While there are elements in the array
-            while (counter > 0) {
-                // Pick a random index
-                let index = Math.floor(Math.random() * counter);
-                // Decrease counter by 1
-                counter--;
-                // And swap the last element with it
-                let temp = array[counter];
-                array[counter] = array[index];
-                array[index] = temp;
-            }
-            return array;
-        }
       }
 
       let promises = [];
@@ -139,19 +271,20 @@
 
         for (var label in times) {
           log("\n\n## Stats", label);
-        	log("\nAverage: " + _.round(_.mean(times[label]), 3), label);
-          log("\nStd Dev: " + _.round(standardDeviation(times[label]), 3), label);
+        	log("\nAverage: " + _.round(_.mean(times[label]), 3) + "ms", label);
+          log("\nStd Dev: " + _.round(standardDeviation(times[label]), 3) + "ms", label);
         }
       });
     }
 
     let timePromise = Promise.resolve();
-    function runInTime(fn) {
+    function runInTime(fn, time) {
+      if (!time) time = 1;
       timePromise = timePromise.then(() => {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             resolve(fn());
-          }, 1);
+          }, time);
         });
       });
       return timePromise;
@@ -164,6 +297,22 @@
       	pre = output.innerText;
       }
       output.innerText = pre + msg;
+    }
+
+    function shuffle(array) {
+      let counter = array.length;
+      // While there are elements in the array
+      while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+        // Decrease counter by 1
+        counter--;
+        // And swap the last element with it
+        let temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+      }
+      return array;
     }
 
     // from: https://derickbailey.com/2014/09/21/calculating-standard-deviation-with-array-map-and-array-reduce-in-javascript/
