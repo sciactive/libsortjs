@@ -78,9 +78,10 @@ function quicksort(arr, options) {
         while (curIndex < lastIndex) {
         	// Compare the item with the last index.
         	const compare = compareFunction(arr[lastIndex], pivot);
-          if (compare < 0) {
+          if (compare <= 0) {
             swapFunction(arr, curIndex, lastIndex);
-            continue;
+            if (compare < 0) curIndex++;
+            break;
           } else {
             lastIndex--;
           }
