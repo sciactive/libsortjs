@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LibSort.js Demo</title>
+  <style type="text/css">
+    header, section {
+      margin: 30px 20px;
+    }
+    #output {
+      margin: 20px 0;
+      display: inline-flex;
+      width: auto;
+      flex: row;
+      align-items: stretch;
+      justify-content: flex-start;
+
+      color: #ccc;
+      font-size: 1.1em;
+      border: 1px solid #ccc;
+      background: #333;
+    }
+    #output pre {
+      margin: 20px 25px;
+    }
+  </style>
+  <script type="text/javascript" src="../src/libsort.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>LibSort.js Demo</h1>
+  </header>
+  <section>
+    <div>
+      Elements: <input type="number" id="elements" value="100000" />
+      <button onclick="doSort()">libsort</button>
+    </div>
+    <div id="output">
+      <pre name="libsortjs"></pre>
+      <pre name="native"></pre>
+      <pre name="debug"></pre>
+    </div>
+  </section>
+  <script type="text/javascript">
+    function doSort() {
+      log("## LibSort.js Quicksort", "libsortjs", true);
+      log("## Native Sort", "native", true);
+      log("## Checking Array Equality\n", "debug", true);
+
+      // console.log(quicksort([5, 3, 6, 4, 1, 2]), "libsortjs");
+      // console.log(quicksort([1, 1, 1, 1, 1, 1]), "libsortjs");
+
+      times = {};
+
+      const benchmarkSort = (sortFunc, shuffle, reverse, label) => {
+        var arr = [...Array(parseInt(document.getElementById("elements").value)).keys()];
+        //var arr = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0];
+        //var arr = [1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+        if (shuffle) shuffle(arr);
+        if (reverse) arr.reverse();
+        const start = window.performance.now();
+        const ret = sortFunc(arr, defaultComparator);
+        const end = window.performance.now();
+        const time = _.round(end - start, 3);
+        log("\nRun Time: " + time + "ms", label);
+
+        if (!times[label]) times[label] = [];
+        times[label].push(time);
+
+        //log(ret, label)
+        return ret;
+
+        function shuffle(array) {
+            let counter = array.length;
+            // While there are elements in the array
+            while (counter > 0) {
+                // Pick a random index
+                let index = Math.floor(Math.random() * counter);
+                // Decrease counter by 1
+                counter--;
+                // And swap the last element with it
+                let temp = array[counter];
+                array[counter] = array[index];
+                array[index] = temp;
+            }
+            return array;
+        }
+      }
+
+      let promises = [];
+      runInTime(() => log("\n\n# Pre-sorted array", "libsortjs"));
+      promises.push(runInTime(() => benchmarkSort(quicksort, false, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(quicksort, false, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(quicksort, false, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(quicksort, false, false, "libsortjs")));
+      runInTime(() => log("\n\n# Pre-sorted array", "native"));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, false, "native")));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, false, "native")));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, false, "native")));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, false, "native")));
+      Promise.all(promises).then((values) => {
+        let equality = true;
+        _.forEach(values, (value, i) => equality = equality && (values[i+1]) ? _.isEqual(value, values[i+1]) : true);
+        log("\nArray Equality: " + equality.toString(), "debug");
+      });
+
+      promises = [];
+      runInTime(() => log("\n\n# Shuffled array", "libsortjs"));
+      promises.push(runInTime(() => benchmarkSort(quicksort, true, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(quicksort, true, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(quicksort, true, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(quicksort, true, false, "libsortjs")));
+      runInTime(() => log("\n\n# Shuffled array", "native"));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), true, false, "native")));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), true, false, "native")));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), true, false, "native")));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), true, false, "native")));
+      Promise.all(promises).then((values) => {
+        let equality = true;
+        _.forEach(values, (value, i) => equality = equality && (values[i+1]) ? _.isEqual(value, values[i+1]) : true);
+        log("\nArray Equality: " + equality.toString(), "debug");
+      });
+
+      promises = [];
+      runInTime(() => log("\n\n# Reversed array", "libsortjs"));
+      promises.push(runInTime(() => benchmarkSort(quicksort, false, true, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(quicksort, false, true, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(quicksort, false, true, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(quicksort, false, true, "libsortjs")));
+      runInTime(() => log("\n\n# Reversed array", "native"));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, true, "native")));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, true, "native")));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, true, "native")));
+      promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, true, "native")));
+      Promise.all(promises).then((values) => {
+        let equality = true;
+        _.forEach(values, (value, i) => equality = equality && (values[i+1]) ? _.isEqual(value, values[i+1]) : true);
+        log("\nArray Equality: " + equality.toString(), "debug");
+
+        for (var label in times) {
+          log("\n\n## Stats", label);
+        	log("\nAverage: " + _.round(_.mean(times[label]), 3), label);
+          log("\nStd Dev: " + _.round(standardDeviation(times[label]), 3), label);
+        }
+      });
+    }
+
+    let timePromise = Promise.resolve();
+    function runInTime(fn) {
+      timePromise = timePromise.then(() => {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(fn());
+          }, 1);
+        });
+      });
+      return timePromise;
+    }
+
+    function log(msg, name, clearFirst) {
+    	let pre = "";
+      let output = document.querySelector("#output [name=\""+name+"\"]");
+    	if (!clearFirst) {
+      	pre = output.innerText;
+      }
+      output.innerText = pre + msg;
+    }
+
+    // from: https://derickbailey.com/2014/09/21/calculating-standard-deviation-with-array-map-and-array-reduce-in-javascript/
+    function standardDeviation(values){
+      var avg = average(values);
+
+      var squareDiffs = values.map(function(value){
+        var diff = value - avg;
+        var sqrDiff = diff * diff;
+        return sqrDiff;
+      });
+
+      var avgSquareDiff = average(squareDiffs);
+
+      var stdDev = Math.sqrt(avgSquareDiff);
+      return stdDev;
+    }
+
+    function average(data){
+      var sum = data.reduce(function(sum, value){
+        return sum + value;
+      }, 0);
+
+      var avg = sum / data.length;
+      return avg;
+    }
+  </script>
+</body>
+</html>
