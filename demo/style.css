@@ -3,7 +3,13 @@ body {
   color: #333;
 }
 header, section {
-  padding: 20px 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+#sortSelector {
+  position: fixed;
+  right: 20px;
+  top: 20px;
 }
 #outputContainer, #visualizeContainer {
   font-size: 1.1em;

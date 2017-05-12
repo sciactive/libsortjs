@@ -52,6 +52,7 @@ function quicksort(arr, options, recursing) {
     return arr;
   }
 
+  // BEGIN QUICKSORT
   let pivotIndex = offset + length - 1;
   // Swap an item from the middle of the list into the pivot index. Choosing a
   // pivot in the middle avoids worst time case when the list is already sorted.
@@ -133,6 +134,46 @@ function quicksort(arr, options, recursing) {
     insertionsort(arr, options);
   }
 
+  // END QUICKSORT
+
+  return arr;
+}
+
+function shellsort(arr, options) {
+  let offset = 0,
+      length = arr.length - offset,
+      compareFunction = defaultCompareFunction,
+      swapFunction = defaultSwapFunction,
+      sortedCallbackFunction = null
+      insertionLimit = 3;
+  if (typeof options === "function") {
+    compareFunction = options;
+  } else if (options !== undefined) {
+  	if (options.offset !== undefined) offset = options.offset;
+    if (options.length !== undefined) length = options.length;
+  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
+  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
+  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+  	if (options.insertionLimit !== undefined) insertionLimit = options.insertionLimit;
+  }
+
+  // BEGIN SHELLSORT
+  let gapDenominator = 2, gap = Math.floor(length / gapDenominator);
+  while (gap > 0) {
+    for (let i = offset + gap; i < offset + length; i++) {
+      let k = i;
+      while (k - gap >= offset && compareFunction(arr[k - gap], arr[k]) > 0) {
+        swapFunction(arr, k - gap, k);
+        k -= gap;
+      }
+      if (gap === 1 && sortedCallbackFunction) sortedCallbackFunction(arr.slice(k, k + 1));
+    }
+    gapDenominator *= 2;
+    gap = Math.floor(length / gapDenominator);
+  }
+  if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
+  // END SHELLSORT
+
   return arr;
 }
 
@@ -152,6 +193,7 @@ function insertionsort(arr, options) {
   	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
   }
 
+  // BEGIN INSERTIONSORT
   for (let i = offset + 1; i < offset + length; i++) {
     let k = i;
     while (k > offset && compareFunction(arr[k - 1], arr[k]) > 0) {
@@ -159,8 +201,9 @@ function insertionsort(arr, options) {
       k--;
     }
   }
-
   if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
+  // END INSERTIONSORT
+
   return arr;
 }
 
@@ -180,6 +223,7 @@ function bubblesort(arr, options) {
   	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
   }
 
+  // BEGIN BUBBLESORT
   let n = length;
   do {
     m = 0;
@@ -192,6 +236,7 @@ function bubblesort(arr, options) {
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(m, offset + length));
     n = m;
   } while (n != 0);
+  // END BUBBLESORT
 
   return arr;
 }

@@ -10,10 +10,30 @@
   <header>
     <h1>LibSort.js</h1>
   </header>
+  <section id="sortSelector">
+    <h2>
+      Sort:
+      <select id="sort">
+        <option value="quicksort">
+          Quicksort
+        </option>
+        <option value="shellsort">
+          Shellsort
+        </option>
+        <option value="insertionsort">
+          Insertion Sort
+        </option>
+        <option value="bubblesort">
+          Bubble Sort
+        </option>
+      </select>
+    </h2>
+  </section>
   <section id="compareSection">
+    <h2>Compare</h2>
     <div>
-      Compare: <input type="number" id="compareElements" value="100000" />
-      <button onclick="doSort()">go</button>
+      Items: <input type="number" id="compareElements" value="100000" />
+      <button onclick="doSort()">GO</button>
     </div>
     <div id="outputContainer">
       <div id="output">
@@ -24,25 +44,15 @@
     </div>
   </section>
   <section id="visualizeSection">
+    <h2>Visualize</h2>
     <div>
-      Visualize: <input type="number" id="visualizeElements" min="0" value="100" />
-      Sort: <select id="visualizeSort">
-        <option value="quicksort">
-          Quicksort
-        </option>
-        <option value="insertionsort">
-          Insertion Sort
-        </option>
-        <option value="bubblesort">
-          Bubble Sort
-        </option>
-      </select>
+      Items: <input type="number" id="visualizeElements" min="0" value="100" />
       Max Delta: <input type="number" id="visualizeMaxDelta" min="-1" value="0" />
       Delay: <input type="number" id="visualizeDelay" min="0" value="0" />
       Insertion Limit: <input type="number" id="visualizeInsertionLimit" min="0" value="0" />
       Shuffle: <input type="checkbox" id="visualizeShuffle" checked />
       Reverse: <input type="checkbox" id="visualizeReverse" />
-      <button onclick="doVisualize()">go</button>
+      <button onclick="doVisualize()">GO</button>
     </div>
     <div id="visualizeContainer">
       <div id="visualize"></div>
@@ -60,8 +70,9 @@
     // console.log(quicksort([1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]));
 
     function doVisualize() {
+      const sort = document.getElementById("sort").value;
+
       const count = parseInt(document.getElementById("visualizeElements").value);
-      const sort = document.getElementById("visualizeSort").value;
       const maxDelta = parseInt(document.getElementById("visualizeMaxDelta").value);
       const delay = parseInt(document.getElementById("visualizeDelay").value);
       const insertionLimit = parseInt(document.getElementById("visualizeInsertionLimit").value);
@@ -135,7 +146,8 @@
     }
 
     function doSort() {
-      log("## LibSort.js Quicksort", "libsortjs", true);
+      const sort = document.getElementById("sort").value;
+      log("## LibSort.js " + sort, "libsortjs", true);
       log("## Native Sort", "native", true);
       log("## Checking Array Equality\n", "debug", true);
 
@@ -159,10 +171,10 @@
 
       let promises = [];
       runInTime(() => log("\n\n# Pre-sorted array", "libsortjs"));
-      promises.push(runInTime(() => benchmarkSort(quicksort, false, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(quicksort, false, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(quicksort, false, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(quicksort, false, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], false, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], false, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], false, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], false, false, "libsortjs")));
       runInTime(() => log("\n\n# Pre-sorted array", "native"));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, false, "native")));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, false, "native")));
@@ -176,10 +188,10 @@
 
       promises = [];
       runInTime(() => log("\n\n# Shuffled array", "libsortjs"));
-      promises.push(runInTime(() => benchmarkSort(quicksort, true, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(quicksort, true, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(quicksort, true, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(quicksort, true, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], true, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], true, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], true, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], true, false, "libsortjs")));
       runInTime(() => log("\n\n# Shuffled array", "native"));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), true, false, "native")));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), true, false, "native")));
@@ -193,10 +205,10 @@
 
       promises = [];
       runInTime(() => log("\n\n# Reversed array", "libsortjs"));
-      promises.push(runInTime(() => benchmarkSort(quicksort, false, true, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(quicksort, false, true, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(quicksort, false, true, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(quicksort, false, true, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], false, true, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], false, true, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], false, true, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(window[sort], false, true, "libsortjs")));
       runInTime(() => log("\n\n# Reversed array", "native"));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, true, "native")));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, true, "native")));
