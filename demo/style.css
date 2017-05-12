@@ -1,0 +1,86 @@
+body {
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+header, section {
+  padding: 20px 10px;
+}
+#outputContainer, #visualizeContainer {
+  font-size: 1.1em;
+  margin-top: 20px;
+  color: #ccc;
+}
+#output, #visualize {
+  border: 1px solid #ccc;
+  background: #333;
+}
+#output {
+  display: inline-flex;
+  width: auto;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+#output pre {
+  margin: 20px 25px;
+}
+#visualizeSection {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+#visualizeContainer {
+  position: relative;
+  flex-grow: 1;
+}
+#visualizeStats {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  font-size: .7em;
+}
+#visualize {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 2px;
+  overflow: hidden;
+  box-sizing: content-box;
+}
+#visualize div {
+  background: #ccc;
+  flex-grow: 1;
+  height: 100%;
+  transform-origin: bottom;
+}
+#visualize div.compare {
+  background-color: #f9ff87;
+}
+#visualize div.swap {
+  background-color: #ffa0a0;
+}
+#visualize div.sorted {
+  background-color: #a6ff8c;
+}
+
+input[type=number] {
+  max-width: 40px;
+}
+#compareElements, #visualizeElements {
+  max-width: 100px;
+}
+button, input, select {
+  background: #ccc;
+  color: #333;
+  border: 1px solid #333;
+  font-weight: bold;
+  padding: 4px 10px;
+}

@@ -18,13 +18,14 @@ function defaultSwapFunction(arr, index1, index2) {
   arr[index2] = temp;
 }
 
-function quicksort(arr, options) {
+function quicksort(arr, options, recursing) {
   let offset = 0,
       length = arr.length - offset,
       maxDelta = 0,
       compareFunction = defaultCompareFunction,
       swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null;
+      sortedCallbackFunction = null
+      insertionLimit = 3;
   if (typeof options === "function") {
     compareFunction = options;
   } else if (options !== undefined) {
@@ -34,6 +35,7 @@ function quicksort(arr, options) {
   	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
   	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
   	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+  	if (options.insertionLimit !== undefined) insertionLimit = options.insertionLimit;
   }
   if (length <= maxDelta + 1) {
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
@@ -101,18 +103,95 @@ function quicksort(arr, options) {
   // If everything is equal, then we're done.
   if (!everythingIsEqual) {
     // Let's see if we need to go deeper.
-    if (curIndex - offset > maxDelta + 1) {
+    const lengthSmallSide = curIndex - offset;
+    if ((maxDelta > -1 && lengthSmallSide > maxDelta + 1) ||
+        (maxDelta === -1 && lengthSmallSide > insertionLimit)) {
       // We need to sort the small side of the list.
-      quicksort(arr, {offset: offset, length: curIndex - offset, maxDelta, compareFunction, swapFunction, sortedCallbackFunction});
-    } else if (sortedCallbackFunction) {
+      if (lengthSmallSide > insertionLimit) {
+        quicksort(arr, {offset: offset, length: lengthSmallSide, maxDelta, compareFunction, swapFunction, sortedCallbackFunction, insertionLimit}, true);
+      } else {
+        insertionsort(arr, {offset: offset, length: lengthSmallSide, compareFunction, swapFunction, sortedCallbackFunction});
+      }
+    } else if (maxDelta > -1 && sortedCallbackFunction) {
       sortedCallbackFunction(arr.slice(offset, curIndex));
     }
-    if (offset + length - curIndex - 1 > maxDelta + 1) {
+    const lengthBigSide = offset + length - curIndex - 1;
+    if ((maxDelta > -1 && lengthBigSide > maxDelta + 1) ||
+        (maxDelta === -1 && lengthBigSide > insertionLimit)) {
       // We need to sort the big side of the list.
-      quicksort(arr, {offset: curIndex + 1, length: offset + length - curIndex - 1, maxDelta, compareFunction, swapFunction, sortedCallbackFunction});
-    } else if (sortedCallbackFunction) {
+      if (lengthBigSide > insertionLimit) {
+        quicksort(arr, {offset: curIndex + 1, length: lengthBigSide, maxDelta, compareFunction, swapFunction, sortedCallbackFunction, insertionLimit}, true);
+      } else {
+        insertionsort(arr, {offset: curIndex + 1, length: lengthBigSide, compareFunction, swapFunction, sortedCallbackFunction});
+      }
+    } else if (maxDelta > -1 && sortedCallbackFunction) {
       sortedCallbackFunction(arr.slice(curIndex + 1, offset + length));
     }
   }
+
+  if (!recursing && maxDelta === -1) {
+    insertionsort(arr, options);
+  }
+
+  return arr;
+}
+
+function insertionsort(arr, options) {
+  let offset = 0,
+      length = arr.length - offset,
+      compareFunction = defaultCompareFunction,
+      swapFunction = defaultSwapFunction,
+      sortedCallbackFunction = null;
+  if (typeof options === "function") {
+    compareFunction = options;
+  } else if (options !== undefined) {
+  	if (options.offset !== undefined) offset = options.offset;
+    if (options.length !== undefined) length = options.length;
+  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
+  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
+  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+  }
+
+  for (let i = offset + 1; i < offset + length; i++) {
+    let k = i;
+    while (k > offset && compareFunction(arr[k - 1], arr[k]) > 0) {
+      swapFunction(arr, k - 1, k);
+      k--;
+    }
+  }
+
+  if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
+  return arr;
+}
+
+function bubblesort(arr, options) {
+  let offset = 0,
+      length = arr.length - offset,
+      compareFunction = defaultCompareFunction,
+      swapFunction = defaultSwapFunction,
+      sortedCallbackFunction = null;
+  if (typeof options === "function") {
+    compareFunction = options;
+  } else if (options !== undefined) {
+  	if (options.offset !== undefined) offset = options.offset;
+    if (options.length !== undefined) length = options.length;
+  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
+  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
+  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+  }
+
+  let n = length;
+  do {
+    m = 0;
+    for (let i = offset + 1; i < n; i++) {
+      if (compareFunction(arr[i - 1], arr[i]) > 0) {
+        swapFunction(arr, i - 1, i);
+        m = i;
+      }
+    }
+    if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(m, offset + length));
+    n = m;
+  } while (n != 0);
+
   return arr;
 }

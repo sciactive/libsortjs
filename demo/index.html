@@ -2,76 +2,7 @@
 <html>
 <head>
   <title>LibSort.js</title>
-  <style type="text/css">
-    header, section {
-      padding: 20px 10px;
-    }
-    #outputContainer, #visualizeContainer {
-      font-size: 1.1em;
-      margin-top: 20px;
-      color: #ccc;
-    }
-    #output, #visualize {
-      border: 1px solid #ccc;
-      background: #333;
-    }
-    #output {
-      display: inline-flex;
-      width: auto;
-      flex-direction: row;
-      align-items: stretch;
-      justify-content: flex-start;
-    }
-    #output pre {
-      margin: 20px 25px;
-    }
-    #visualizeSection {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      align-items: stretch;
-      box-sizing: border-box;
-    }
-    #visualizeContainer {
-      position: relative;
-      flex-grow: 1;
-    }
-    #visualizeStats {
-      position: absolute;
-      top: 5px;
-      left: 5px;
-      font-size: .7em;
-    }
-    #visualize {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      display: flex;
-      flex-direction: row;
-      align-items: flex-end;
-      justify-content: space-between;
-      padding: 2px;
-      overflow: hidden;
-      box-sizing: content-box;
-    }
-    #visualize div {
-      background: #ccc;
-      flex-grow: 1;
-      height: 100%;
-      transform-origin: bottom;
-    }
-    #visualize div.compare {
-      background-color: #f9ff87;
-    }
-    #visualize div.swap {
-      background-color: #ffa0a0;
-    }
-    #visualize div.sorted {
-      background-color: #a6ff8c;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="style.css" />
   <script type="text/javascript" src="../src/libsort.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
 </head>
@@ -95,8 +26,20 @@
   <section id="visualizeSection">
     <div>
       Visualize: <input type="number" id="visualizeElements" min="0" value="100" />
-      Max Delta: <input type="number" id="visualizeMaxDelta" min="0" value="0" />
-      Delay: <input type="number" id="visualizeDelay" min="0" value="20" />
+      Sort: <select id="visualizeSort">
+        <option value="quicksort">
+          Quicksort
+        </option>
+        <option value="insertionsort">
+          Insertion Sort
+        </option>
+        <option value="bubblesort">
+          Bubble Sort
+        </option>
+      </select>
+      Max Delta: <input type="number" id="visualizeMaxDelta" min="-1" value="0" />
+      Delay: <input type="number" id="visualizeDelay" min="0" value="0" />
+      Insertion Limit: <input type="number" id="visualizeInsertionLimit" min="0" value="0" />
       Shuffle: <input type="checkbox" id="visualizeShuffle" checked />
       Reverse: <input type="checkbox" id="visualizeReverse" />
       <button onclick="doVisualize()">go</button>
@@ -118,8 +61,10 @@
 
     function doVisualize() {
       const count = parseInt(document.getElementById("visualizeElements").value);
+      const sort = document.getElementById("visualizeSort").value;
       const maxDelta = parseInt(document.getElementById("visualizeMaxDelta").value);
       const delay = parseInt(document.getElementById("visualizeDelay").value);
+      const insertionLimit = parseInt(document.getElementById("visualizeInsertionLimit").value);
       const shuffled = document.getElementById("visualizeShuffle").checked;
       const reversed = document.getElementById("visualizeReverse").checked;
       document.getElementById("visualizeStatLength").textContent = count;
@@ -141,8 +86,9 @@
         frag.appendChild(children[i]);
       }
       visualize.appendChild(frag);
-      quicksort(children, {
+      window[sort](children, {
         maxDelta,
+        insertionLimit,
         compareFunction: (a, b) => {
           let aOrig, bOrig;
           runInTime(() => {
@@ -168,18 +114,6 @@
               parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
           });
           runInTime(() => {
-            // const aSibling = a.nextSibling;
-            // const bSibling = b.nextSibling;
-            // if (bSibling) {
-            //   visualize.insertBefore(a, bSibling);
-            // } else {
-            //   visualize.appendChild(a);
-            // }
-            // if (aSibling) {
-            //   visualize.insertBefore(b, aSibling);
-            // } else {
-            //   visualize.appendChild(b);
-            // }
           	const temp = a.style.transform;
             a.style.transform = b.style.transform;
             b.style.transform = temp;
@@ -220,7 +154,6 @@
         if (!times[label]) times[label] = [];
         times[label].push(time);
 
-        //log(ret, label)
         return ret;
       }
 
