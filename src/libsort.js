@@ -6,19 +6,19 @@
  * Copyright 2017 Hunter Perrin
  */
 
-function defaultCompareFunction(a, b) {
+export function defaultCompareFunction(a, b) {
   if (a < b) return -1;
   if (a > b) return 1;
   return 0;
 }
 
-function defaultSwapFunction(arr, index1, index2) {
+export function defaultSwapFunction(arr, index1, index2) {
 	const temp = arr[index1];
   arr[index1] = arr[index2];
   arr[index2] = temp;
 }
 
-function quicksort(arr, options, recursing) {
+export function quicksort(arr, options, recursing) {
   let offset = 0,
       length = arr.length - offset,
       maxDelta = 0,
@@ -139,7 +139,7 @@ function quicksort(arr, options, recursing) {
   return arr;
 }
 
-function shellsort(arr, options) {
+export function shellsort(arr, options) {
   let offset = 0,
       length = arr.length - offset,
       compareFunction = defaultCompareFunction,
@@ -177,7 +177,7 @@ function shellsort(arr, options) {
   return arr;
 }
 
-function insertionsort(arr, options) {
+export function insertionsort(arr, options) {
   let offset = 0,
       length = arr.length - offset,
       compareFunction = defaultCompareFunction,
@@ -207,7 +207,7 @@ function insertionsort(arr, options) {
   return arr;
 }
 
-function bubblesort(arr, options) {
+export function bubblesort(arr, options) {
   let offset = 0,
       length = arr.length - offset,
       compareFunction = defaultCompareFunction,
