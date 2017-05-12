@@ -5,6 +5,7 @@
  * Apache 2.0 License
  * Copyright 2017 Hunter Perrin
  */
+ "use strict";
 
 export function defaultCompareFunction(a, b) {
   if (a < b) return -1;
@@ -24,7 +25,7 @@ export function quicksort(arr, options, recursing) {
       maxDelta = 0,
       compareFunction = defaultCompareFunction,
       swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null
+      sortedCallbackFunction = null,
       insertionLimit = 3;
   if (typeof options === "function") {
     compareFunction = options;

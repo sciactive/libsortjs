@@ -11,6 +11,9 @@ header, section {
   right: 10px;
   top: 10px;
 }
+#sortSelector h2 {
+  margin: 0;
+}
 #outputContainer, #visualizeContainer {
   font-size: 1.1em;
   margin-top: 20px;

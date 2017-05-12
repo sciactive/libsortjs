@@ -1,8 +1,9 @@
 module.exports = {
     entry: "./src/libsort.js",
     output: {
-        path: __dirname,
-        filename: "lib/libsort.js"
+      library: "LibSort",
+      path: __dirname,
+      filename: "lib/libsort.js"
     },
     module: {
       loaders: [

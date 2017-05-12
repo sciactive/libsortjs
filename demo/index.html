@@ -97,7 +97,7 @@
         frag.appendChild(children[i]);
       }
       visualize.appendChild(frag);
-      window[sort](children, {
+      LibSort[sort](children, {
         maxDelta,
         insertionLimit,
         compareFunction: (a, b) => {
@@ -158,7 +158,7 @@
         if (shuffled) shuffle(arr);
         if (reversed) arr.reverse();
         const start = window.performance.now();
-        const ret = sortFunc(arr, defaultCompareFunction);
+        const ret = sortFunc(arr, LibSort.defaultCompareFunction);
         const end = window.performance.now();
         const time = _.round(end - start, 3);
         log("\nRun Time: " + time + "ms", label);
@@ -171,10 +171,10 @@
 
       let promises = [];
       runInTime(() => log("\n\n# Pre-sorted array", "libsortjs"));
-      promises.push(runInTime(() => benchmarkSort(window[sort], false, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(window[sort], false, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(window[sort], false, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(window[sort], false, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], false, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], false, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], false, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], false, false, "libsortjs")));
       runInTime(() => log("\n\n# Pre-sorted array", "native"));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, false, "native")));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, false, "native")));
@@ -188,10 +188,10 @@
 
       promises = [];
       runInTime(() => log("\n\n# Shuffled array", "libsortjs"));
-      promises.push(runInTime(() => benchmarkSort(window[sort], true, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(window[sort], true, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(window[sort], true, false, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(window[sort], true, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], true, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], true, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], true, false, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], true, false, "libsortjs")));
       runInTime(() => log("\n\n# Shuffled array", "native"));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), true, false, "native")));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), true, false, "native")));
@@ -205,10 +205,10 @@
 
       promises = [];
       runInTime(() => log("\n\n# Reversed array", "libsortjs"));
-      promises.push(runInTime(() => benchmarkSort(window[sort], false, true, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(window[sort], false, true, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(window[sort], false, true, "libsortjs")));
-      promises.push(runInTime(() => benchmarkSort(window[sort], false, true, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], false, true, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], false, true, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], false, true, "libsortjs")));
+      promises.push(runInTime(() => benchmarkSort(LibSort[sort], false, true, "libsortjs")));
       runInTime(() => log("\n\n# Reversed array", "native"));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, true, "native")));
       promises.push(runInTime(() => benchmarkSort((arr, c) => arr.sort(c), false, true, "native")));
