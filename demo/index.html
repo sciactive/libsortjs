@@ -94,9 +94,11 @@
   </section>
   <section id="visualizeSection">
     <div>
-      Visualize: <input type="number" id="visualizeElements" value="100" />
-      Max Delta: <input type="number" id="visualizeMaxDelta" value="0" />
-      Delay: <input type="number" id="visualizeDelay" value="20" />
+      Visualize: <input type="number" id="visualizeElements" min="0" value="100" />
+      Max Delta: <input type="number" id="visualizeMaxDelta" min="0" value="0" />
+      Delay: <input type="number" id="visualizeDelay" min="0" value="20" />
+      Shuffle: <input type="checkbox" id="visualizeShuffle" checked />
+      Reverse: <input type="checkbox" id="visualizeReverse" />
       <button onclick="doVisualize()">go</button>
     </div>
     <div id="visualizeContainer">
@@ -118,6 +120,8 @@
       const count = parseInt(document.getElementById("visualizeElements").value);
       const maxDelta = parseInt(document.getElementById("visualizeMaxDelta").value);
       const delay = parseInt(document.getElementById("visualizeDelay").value);
+      const shuffled = document.getElementById("visualizeShuffle").checked;
+      const reversed = document.getElementById("visualizeReverse").checked;
       document.getElementById("visualizeStatLength").textContent = count;
       document.getElementById("visualizeStatComparisons").textContent = "0";
       document.getElementById("visualizeStatSwaps").textContent = "0";
@@ -130,7 +134,8 @@
         el.libSortIndex = i;
         children.push(el);
       }
-      shuffle(children);
+      if (shuffled) shuffle(children);
+      if (reversed) children.reverse();
       const frag = document.createDocumentFragment();
       for (let i = 0; i < children.length; i++) {
         frag.appendChild(children[i]);
