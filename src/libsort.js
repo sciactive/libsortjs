@@ -145,8 +145,7 @@ export function shellsort(arr, options) {
       length = arr.length - offset,
       compareFunction = defaultCompareFunction,
       swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null
-      insertionLimit = 3;
+      sortedCallbackFunction = null;
   if (typeof options === "function") {
     compareFunction = options;
   } else if (options !== undefined) {
@@ -155,7 +154,6 @@ export function shellsort(arr, options) {
   	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
   	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
   	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
-  	if (options.insertionLimit !== undefined) insertionLimit = options.insertionLimit;
   }
 
   // BEGIN SHELLSORT
