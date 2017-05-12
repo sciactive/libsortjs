@@ -8,8 +8,8 @@ header, section {
 }
 #sortSelector {
   position: fixed;
-  right: 20px;
-  top: 20px;
+  right: 10px;
+  top: 10px;
 }
 #outputContainer, #visualizeContainer {
   font-size: 1.1em;
