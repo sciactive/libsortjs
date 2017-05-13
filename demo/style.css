@@ -6,14 +6,6 @@ header, section {
   padding-left: 10px;
   padding-right: 10px;
 }
-#sortSelector {
-  position: fixed;
-  right: 10px;
-  top: 10px;
-}
-#sortSelector h2 {
-  margin: 0;
-}
 #outputContainer, #visualizeContainer {
   font-size: 1.1em;
   margin-top: 20px;
@@ -67,17 +59,46 @@ header, section {
 #visualize div {
   background: #ccc;
   flex-grow: 1;
-  height: 100%;
   transform-origin: bottom;
 }
-#visualize div.compare {
+#visualize.height div {
+  height: 100%;
+}
+#visualize.color div, #visualize.grayscale div {
+  height: 48%;
+  position: absolute;
+  left: 50%;
+  top: 1%;
+  border-bottom-left-radius: 100%;
+  border-bottom-right-radius: 100%;
+  box-sizing: border-box;
+}
+#visualize.height div.compare {
   background-color: #f9ff87;
 }
-#visualize div.swap {
+#visualize.color div.compare {
+  border-top: 8px solid #f9ff87;
+}
+#visualize.grayscale div.compare {
+  outline: 3px dotted #fff;
+}
+#visualize.height div.swap {
   background-color: #ffa0a0;
 }
-#visualize div.sorted {
+#visualize.color div.swap {
+  border-top: 8px solid #ffa0a0;
+}
+#visualize.grayscale div.swap {
+  outline: 3px dashed #fff;
+}
+#visualize.height div.sorted {
   background-color: #a6ff8c;
+}
+#visualize.color div.sorted {
+  border-top: 3px solid #a6ff8c;
+}
+#visualize.grayscale div.sorted {
+  border-top: 5px ridge #666;
 }
 
 input[type=number] {

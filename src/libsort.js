@@ -165,7 +165,6 @@ export function shellsort(arr, options) {
         swapFunction(arr, k - gap, k);
         k -= gap;
       }
-      if (gap === 1 && sortedCallbackFunction) sortedCallbackFunction(arr.slice(k, k + 1));
     }
     gapDenominator *= 2;
     gap = Math.floor(length / gapDenominator);
@@ -225,7 +224,7 @@ export function bubblesort(arr, options) {
   // BEGIN BUBBLESORT
   let n = length;
   do {
-    m = 0;
+    let m = 0;
     for (let i = offset + 1; i < n; i++) {
       if (compareFunction(arr[i - 1], arr[i]) > 0) {
         swapFunction(arr, i - 1, i);
