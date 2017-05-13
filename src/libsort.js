@@ -49,6 +49,7 @@ export function quicksort(arr, options, recursing) {
     return arr;
   }
 
+  // BEGIN QUICKSORT
   // Let's see if we just need to make one quick comparison.
   if (length === 2) {
   	if (compareFunction(arr[offset], arr[offset + 1]) > 0) {
@@ -58,8 +59,6 @@ export function quicksort(arr, options, recursing) {
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + 2));
     return arr;
   }
-
-  // BEGIN QUICKSORT
   let pivotIndex = offset + length - 1;
   // Swap an item from the middle of the list into the pivot index. Choosing a
   // pivot in the middle avoids worst time case when the list is already sorted.
@@ -170,6 +169,16 @@ export function mergesort(arr, options, recursing) {
   }
 
   // BEGIN MERGESORT
+  // Let's see if we just need to make one quick comparison.
+  if (length === 2) {
+  	if (compareFunction(arr[offset], arr[offset + 1]) > 0) {
+    	// Our one element is bigger than its sibling, so swap them.
+      const temp = arr[offset];
+      insertFunction(arr, offset, arr[offset + 1]);
+      insertFunction(arr, offset + 1, temp);
+    }
+    return arr;
+  }
   const mid = Math.floor(length / 2);
   if (mid > maxDelta + 1) {
     mergesort(arr, {offset: offset, length: mid, maxDelta, compareFunction, insertFunction, sortedCallbackFunction}, true);
