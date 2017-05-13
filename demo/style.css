@@ -104,6 +104,11 @@ header, section {
 input[type=number] {
   max-width: 40px;
 }
+button:disabled, input:disabled, select:disabled {
+  background: #666;
+  color: #000;
+  cursor: not-allowed;
+}
 #compareElements, #visualizeElements {
   max-width: 100px;
 }

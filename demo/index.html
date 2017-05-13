@@ -14,7 +14,7 @@
     <h2>Compare Sorting Algorithms</h2>
     <div>
       Sort 1:
-      <select id="compareSort1">
+      <select id="compareSort1" onchange="document.getElementById('compareInsertionLimit1').disabled = this.value !== 'quicksort';">
         <option value="quicksort">Quicksort</option>
         <option value="shellsort">Shellsort</option>
         <option value="insertionsort">Insertion Sort</option>
@@ -24,14 +24,14 @@
       Insertion Limit 1: <input type="number" id="compareInsertionLimit1" min="0" value="0" />
       <br /><br />
       Sort 2:
-      <select id="compareSort2">
+      <select id="compareSort2" onchange="document.getElementById('compareInsertionLimit2').disabled = this.value !== 'quicksort';">
         <option value="quicksort">Quicksort</option>
         <option value="shellsort">Shellsort</option>
         <option value="insertionsort">Insertion Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="native" selected>Native (Browser)</option>
       </select>
-      Insertion Limit 2: <input type="number" id="compareInsertionLimit2" min="0" value="0" />
+      Insertion Limit 2: <input type="number" id="compareInsertionLimit2" min="0" value="0" disabled />
       <br /><br />
       Items: <input type="number" id="compareElements" min="1" value="100000" />
       Rounds: <input type="number" id="compareRounds" min="1" value="4" />
@@ -49,7 +49,7 @@
     <h2>Visualize LibSort.js</h2>
     <div>
       Sort:
-      <select id="visualizeSort">
+      <select id="visualizeSort" onchange="document.getElementById('visualizeMaxDelta').disabled = document.getElementById('visualizeInsertionLimit').disabled = this.value !== 'quicksort';">
         <option value="quicksort">Quicksort</option>
         <option value="shellsort">Shellsort</option>
         <option value="insertionsort">Insertion Sort</option>
