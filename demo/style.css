@@ -11,7 +11,7 @@ header, section {
   margin-top: 20px;
   color: #ccc;
 }
-#output, #visualize {
+#output, #visualizeContainer {
   border: 1px solid #ccc;
   background: #333;
 }
@@ -101,6 +101,15 @@ header, section {
   border-top: 5px ridge #666;
 }
 
+/* Totally crazy styles. */
+#visualizeContainer {
+  perspective: 80vh;
+  overflow: hidden;
+}
+#visualize.perspective {
+  transform: translateY(-10vh) scaleY(2) scaleX(2) rotateX(70deg) rotateY(15deg) rotateZ(-45deg);
+}
+
 input[type=number] {
   max-width: 40px;
 }
@@ -118,4 +127,5 @@ button, input, select {
   border: 1px solid #333;
   font-weight: bold;
   padding: 4px 10px;
+  border-radius: 2px;
 }

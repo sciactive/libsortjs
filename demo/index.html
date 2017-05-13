@@ -14,24 +14,46 @@
     <h2>Compare Sorting Algorithms</h2>
     <div>
       Sort 1:
-      <select id="compareSort1" onchange="document.getElementById('compareInsertionLimit1').disabled = this.value !== 'quicksort';">
+      <select id="compareSort1" onchange="document.getElementById('compareSwitchLimit1').disabled = document.getElementById('compareSwitchFunction1').disabled = ['quicksort', 'shellsort'].indexOf(this.value) === -1;">
         <option value="quicksort">Quicksort</option>
+        <option value="mergesort">Merge Sort</option>
         <option value="shellsort">Shellsort</option>
         <option value="insertionsort">Insertion Sort</option>
         <option value="bubblesort">Bubble Sort</option>
+        <option value="bogosort">Bogosort</option>
         <option value="native">Native (Browser)</option>
       </select>
-      Insertion Limit 1: <input type="number" id="compareInsertionLimit1" min="0" value="0" />
+      Switch Limit: <input type="number" id="compareSwitchLimit1" min="0" value="0" />
+      Switch Sort:
+      <select id="compareSwitchFunction1">
+        <option value="quicksort">Quicksort</option>
+        <option value="mergesort">Merge Sort</option>
+        <option value="shellsort">Shellsort</option>
+        <option value="insertionsort" selected>Insertion Sort</option>
+        <option value="bubblesort">Bubble Sort</option>
+        <option value="bogosort">Bogosort</option>
+      </select>
       <br /><br />
       Sort 2:
-      <select id="compareSort2" onchange="document.getElementById('compareInsertionLimit2').disabled = this.value !== 'quicksort';">
+      <select id="compareSort2" onchange="document.getElementById('compareSwitchLimit2').disabled = document.getElementById('compareSwitchFunction2').disabled = ['quicksort', 'shellsort'].indexOf(this.value) === -1;">
         <option value="quicksort">Quicksort</option>
+        <option value="mergesort">Merge Sort</option>
         <option value="shellsort">Shellsort</option>
         <option value="insertionsort">Insertion Sort</option>
         <option value="bubblesort">Bubble Sort</option>
+        <option value="bogosort">Bogosort</option>
         <option value="native" selected>Native (Browser)</option>
       </select>
-      Insertion Limit 2: <input type="number" id="compareInsertionLimit2" min="0" value="0" disabled />
+      Switch Limit: <input type="number" id="compareSwitchLimit2" min="0" value="0" disabled />
+      Switch Sort:
+      <select id="compareSwitchFunction2" disabled>
+        <option value="quicksort">Quicksort</option>
+        <option value="mergesort">Merge Sort</option>
+        <option value="shellsort">Shellsort</option>
+        <option value="insertionsort" selected>Insertion Sort</option>
+        <option value="bubblesort">Bubble Sort</option>
+        <option value="bogosort">Bogosort</option>
+      </select>
       <br /><br />
       Items: <input type="number" id="compareElements" min="1" value="100000" />
       Rounds: <input type="number" id="compareRounds" min="1" value="4" />
@@ -48,23 +70,38 @@
   <section id="visualizeSection">
     <h2>Visualize LibSort.js</h2>
     <div>
-      Sort:
-      <select id="visualizeSort" onchange="document.getElementById('visualizeMaxDelta').disabled = document.getElementById('visualizeInsertionLimit').disabled = this.value !== 'quicksort';">
-        <option value="quicksort">Quicksort</option>
-        <option value="shellsort">Shellsort</option>
-        <option value="insertionsort">Insertion Sort</option>
-        <option value="bubblesort">Bubble Sort</option>
-      </select>
       Mode:
       <select id="visualizeMode">
         <option value="height">Height</option>
         <option value="color">Color</option>
         <option value="grayscale">Grayscale</option>
       </select>
+      Perspective: <input type="checkbox" id="visualizePerspective" />
+      Sort:
+      <select id="visualizeSort" onchange="
+          document.getElementById('visualizeMaxDelta').disabled = ['quicksort', 'mergesort'].indexOf(this.value) === -1;
+          document.getElementById('visualizeSwitchLimit').disabled = document.getElementById('visualizeSwitchFunction').disabled = ['quicksort', 'shellsort'].indexOf(this.value) === -1;
+        ">
+        <option value="quicksort">Quicksort</option>
+        <option value="mergesort">Merge Sort</option>
+        <option value="shellsort">Shellsort</option>
+        <option value="insertionsort">Insertion Sort</option>
+        <option value="bubblesort">Bubble Sort</option>
+        <option value="bogosort">Bogosort</option>
+      </select>
       Items: <input type="number" id="visualizeElements" min="0" value="100" />
       Max Delta: <input type="number" id="visualizeMaxDelta" min="-1" value="0" />
       Delay: <input type="number" id="visualizeDelay" min="0" value="0" />
-      Insertion Limit: <input type="number" id="visualizeInsertionLimit" min="0" value="0" />
+      Switch Limit: <input type="number" id="visualizeSwitchLimit" min="0" value="0" />
+      Switch Sort:
+      <select id="visualizeSwitchFunction">
+        <option value="quicksort">Quicksort</option>
+        <option value="mergesort">Merge Sort</option>
+        <option value="shellsort">Shellsort</option>
+        <option value="insertionsort" selected>Insertion Sort</option>
+        <option value="bubblesort">Bubble Sort</option>
+        <option value="bogosort">Bogosort</option>
+      </select>
       Shuffle: <input type="checkbox" id="visualizeShuffle" checked />
       Reverse: <input type="checkbox" id="visualizeReverse" />
       <button onclick="doVisualize()">GO</button>
@@ -74,7 +111,7 @@
       <div id="visualizeStats">
         Array Length: <span id="visualizeStatLength">0</span>
         Comparisons: <span id="visualizeStatComparisons">0</span>
-        Swaps: <span id="visualizeStatSwaps">0</span>
+        <span id="visualizeStatsOperationLabel">Swaps</span>: <span id="visualizeStatSwaps">0</span>
       </div>
     </div>
   </section>
@@ -88,19 +125,27 @@
       const sort = document.getElementById("visualizeSort").value;
 
       const mode = document.getElementById("visualizeMode").value;
+      const perspective = document.getElementById("visualizePerspective").checked;
       const count = parseInt(document.getElementById("visualizeElements").value);
       const maxDelta = parseInt(document.getElementById("visualizeMaxDelta").value);
       const delay = parseInt(document.getElementById("visualizeDelay").value);
-      const insertionLimit = parseInt(document.getElementById("visualizeInsertionLimit").value);
+      const switchLimit = parseInt(document.getElementById("visualizeSwitchLimit").value);
+      const switchFunction = document.getElementById("visualizeSwitchFunction").value;
       const shuffled = document.getElementById("visualizeShuffle").checked;
       const reversed = document.getElementById("visualizeReverse").checked;
       document.getElementById("visualizeStatLength").textContent = count;
       document.getElementById("visualizeStatComparisons").textContent = "0";
       document.getElementById("visualizeStatSwaps").textContent = "0";
+      if (sort === 'mergesort') {
+        document.getElementById("visualizeStatsOperationLabel").textContent = "Inserts";
+      } else {
+        document.getElementById("visualizeStatsOperationLabel").textContent = "Swaps";
+      }
       const visualize = document.getElementById("visualize");
       visualize.innerHTML = "";
-      visualize.classList.remove("height", "color", "grayscale");
+      visualize.classList.remove("height", "color", "grayscale", "perspective");
       visualize.classList.add(mode);
+      if (perspective) visualize.classList.add("perspective");
       const children = [];
       const colorModeWidth = (1 / count * 100 * Math.PI) + "vh";
       const colorModePaddingBottom = (1 / count * 100) / Math.sqrt(2) + "%";
@@ -137,7 +182,8 @@
       visualize.appendChild(frag);
       LibSort[sort](children, {
         maxDelta,
-        insertionLimit,
+        switchLimit,
+        switchFunction: LibSort[switchFunction],
         compareFunction: (a, b) => {
           let aOrig, bOrig;
           runInTime(() => {
@@ -185,10 +231,36 @@
           arr[index1].libSortIndex = arr[index2].libSortIndex;
           arr[index2].libSortIndex = temp;
         },
-        sortedCallbackFunction: (arr) => {
+        insertFunction: (arr, index, element) => {
           runInTime(() => {
-            _.forEach(arr, (el) => el.classList.add("sorted"));
+            visualize.children[index].classList.add("swap");
+            document.getElementById("visualizeStatSwaps").textContent =
+              parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
           });
+          runInTime(((change) => {
+            return () => {
+              if (mode === "height") {
+                visualize.children[index].style.transform = change.libSortTransformScale;
+              } else {
+                visualize.children[index].style.backgroundColor = change.libSortColor;
+              }
+            }
+          })({
+            libSortTransformScale: element.libSortTransformScale,
+            libSortColor: element.libSortColor
+          }), Math.floor(delay / 2));
+          runInTime(() => {
+            visualize.children[index].classList.remove("swap");
+          }, Math.floor(delay / 2));
+          arr[index] = element;
+        },
+        sortedCallbackFunction: (arr) => {
+          if (sort === 'mergesort') {
+            const indexes = _.map(arr, (element) => children.indexOf(element));
+            runInTime(() => _.forEach(indexes, (index) => visualize.children[index].classList.add("sorted")));
+          } else {
+            runInTime(() => _.forEach(arr, (el) => el.classList.add("sorted")));
+          }
         }
       });
     }
@@ -198,8 +270,10 @@
       const sort2 = document.getElementById("compareSort2").value;
       const count = parseInt(document.getElementById("compareElements").value);
       const rounds = parseInt(document.getElementById("compareRounds").value);
-      const insertionLimit1 = parseInt(document.getElementById("compareInsertionLimit1").value);
-      const insertionLimit2 = parseInt(document.getElementById("compareInsertionLimit2").value);
+      const switchLimit1 = parseInt(document.getElementById("compareSwitchLimit1").value);
+      const switchLimit2 = parseInt(document.getElementById("compareSwitchLimit2").value);
+      const switchFunction1 = document.getElementById("compareSwitchFunction1").value;
+      const switchFunction2 = document.getElementById("compareSwitchFunction2").value;
       const arrSkel = [...Array(count).keys()];
 
       log("\n\n", "sort1", true);
@@ -209,7 +283,7 @@
       log("## " + (sort2 === "native" ? "Native Sort" : ("LibSort.js " + sort2)), "sort2");
       log("## Checking Array Equality\n", "debug");
 
-      times = {};
+      let times = {}, timesSorted, timesShuffled, timesReversed;
 
       const benchmarkSort = (sortFunc, shuffled, reversed, label) => {
         const arr = arrSkel.slice();
@@ -227,12 +301,13 @@
         return ret;
       }
 
-      const callSort = (sort, insLim, arr, c) => {
+      const callSort = (sort, switchLimit, switchFunction, arr, c) => {
         if (sort === "native") {
           return arr.sort(c);
         } else {
           return LibSort[sort](arr, {
-            insertionLimit: insLim,
+            switchLimit,
+            switchFunction: LibSort[switchFunction],
             compareFunction: c
           });
         }
@@ -241,41 +316,11 @@
       let promises = [];
       runInTime(() => log("\n\n# Pre-sorted array", "sort1"));
       for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort1, insertionLimit1, arr, c), false, false, "sort1")));
+        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), false, false, "sort1")));
       }
       runInTime(() => log("\n\n# Pre-sorted array", "sort2"));
       for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort2, insertionLimit2, arr, c), false, false, "sort2")));
-      }
-      Promise.all(promises).then((values) => {
-        let equality = true;
-        _.forEach(values, (value, i) => equality = equality && (values[i+1]) ? _.isEqual(value, values[i+1]) : true);
-        log("\nArray Equality: " + equality.toString(), "debug");
-      });
-
-      promises = [];
-      runInTime(() => log("\n\n# Shuffled array", "sort1"));
-      for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort1, insertionLimit1, arr, c), true, false, "sort1")));
-      }
-      runInTime(() => log("\n\n# Shuffled array", "sort2"));
-      for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort2, insertionLimit2, arr, c), true, false, "sort2")));
-      }
-      Promise.all(promises).then((values) => {
-        let equality = true;
-        _.forEach(values, (value, i) => equality = equality && (values[i+1]) ? _.isEqual(value, values[i+1]) : true);
-        log("\nArray Equality: " + equality.toString(), "debug");
-      });
-
-      promises = [];
-      runInTime(() => log("\n\n# Reversed array", "sort1"));
-      for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort1, insertionLimit1, arr, c), false, true, "sort1")));
-      }
-      runInTime(() => log("\n\n# Reversed array", "sort2"));
-      for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort2, insertionLimit2, arr, c), false, true, "sort2")));
+        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), false, false, "sort2")));
       }
       Promise.all(promises).then((values) => {
         let equality = true;
@@ -283,9 +328,64 @@
         log("\nArray Equality: " + equality.toString(), "debug");
 
         for (var label in times) {
-          log("\n\n## Stats", label);
+          log("\n\n# Stats", label);
         	log("\nAverage: " + _.round(_.mean(times[label]), 3) + "ms", label);
           log("\nStd Dev: " + _.round(standardDeviation(times[label]), 3) + "ms", label);
+        }
+
+        timesSorted = times;
+        times = {};
+      });
+
+      promises = [];
+      runInTime(() => log("\n\n# Shuffled array", "sort1"));
+      for (let i = 0; i < rounds; i++) {
+        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), true, false, "sort1")));
+      }
+      runInTime(() => log("\n\n# Shuffled array", "sort2"));
+      for (let i = 0; i < rounds; i++) {
+        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), true, false, "sort2")));
+      }
+      Promise.all(promises).then((values) => {
+        let equality = true;
+        _.forEach(values, (value, i) => equality = equality && (values[i+1]) ? _.isEqual(value, values[i+1]) : true);
+        log("\nArray Equality: " + equality.toString(), "debug");
+
+        for (var label in times) {
+          log("\n\n# Stats", label);
+        	log("\nAverage: " + _.round(_.mean(times[label]), 3) + "ms", label);
+          log("\nStd Dev: " + _.round(standardDeviation(times[label]), 3) + "ms", label);
+        }
+
+        timesShuffled = times;
+        times = {};
+      });
+
+      promises = [];
+      runInTime(() => log("\n\n# Reversed array", "sort1"));
+      for (let i = 0; i < rounds; i++) {
+        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), false, true, "sort1")));
+      }
+      runInTime(() => log("\n\n# Reversed array", "sort2"));
+      for (let i = 0; i < rounds; i++) {
+        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), false, true, "sort2")));
+      }
+      Promise.all(promises).then((values) => {
+        let equality = true;
+        _.forEach(values, (value, i) => equality = equality && (values[i+1]) ? _.isEqual(value, values[i+1]) : true);
+        log("\nArray Equality: " + equality.toString(), "debug");
+
+        for (var label in times) {
+          log("\n\n# Stats", label);
+        	log("\nAverage: " + _.round(_.mean(times[label]), 3) + "ms", label);
+          log("\nStd Dev: " + _.round(standardDeviation(times[label]), 3) + "ms", label);
+        }
+
+        timesReversed = times;
+        for (var label in times) {
+          log("\n\n## Total Stats", label);
+        	log("\nAverage: " + _.round(_.mean(timesSorted[label].concat(timesShuffled[label]).concat(timesReversed[label])), 3) + "ms", label);
+          log("\nStd Dev: " + _.round(standardDeviation(timesSorted[label].concat(timesShuffled[label]).concat(timesReversed[label])), 3) + "ms", label);
         }
       });
     }
