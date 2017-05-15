@@ -218,6 +218,36 @@ export function mergesort(arr, options, recursing) {
   return arr;
 }
 
+export function heapsort(arr, options) {
+  let offset = 0,
+      length = arr.length - offset,
+      compareFunction = defaultCompareFunction,
+      swapFunction = defaultSwapFunction,
+      sortedCallbackFunction = null;
+  if (typeof options === "function") {
+    compareFunction = options;
+  } else if (options !== undefined) {
+  	if (options.offset !== undefined) offset = options.offset;
+    if (options.length !== undefined) length = options.length;
+  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
+  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
+  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+  }
+
+  // BEGIN HEAPSORT
+  // END HEAPSORT
+
+  return arr;
+}
+
+function buildMaxHeap(arr, options) {
+
+}
+
+function heapify(arr, options, i) {
+
+}
+
 export function shellsort(arr, options) {
   let offset = 0,
       length = arr.length - offset,

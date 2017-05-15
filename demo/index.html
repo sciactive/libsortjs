@@ -77,6 +77,7 @@
         <option value="grayscale">Grayscale</option>
       </select>
       Perspective: <input type="checkbox" id="visualizePerspective" />
+      Delay: <input type="number" id="visualizeDelay" min="0" value="0" />
       Sort:
       <select id="visualizeSort" onchange="
           document.getElementById('visualizeMaxDelta').disabled = ['quicksort', 'mergesort'].indexOf(this.value) === -1;
@@ -91,7 +92,6 @@
       </select>
       Items: <input type="number" id="visualizeElements" min="0" value="100" />
       Max Delta: <input type="number" id="visualizeMaxDelta" min="-1" value="0" />
-      Delay: <input type="number" id="visualizeDelay" min="0" value="0" />
       Switch Limit: <input type="number" id="visualizeSwitchLimit" min="0" value="0" />
       Switch Sort:
       <select id="visualizeSwitchFunction">
@@ -109,9 +109,14 @@
     <div id="visualizeContainer">
       <div id="visualize"></div>
       <div id="visualizeStats">
-        Array Length: <span id="visualizeStatLength">0</span>
-        Comparisons: <span id="visualizeStatComparisons">0</span>
-        <span id="visualizeStatsOperationLabel">Swaps</span>: <span id="visualizeStatSwaps">0</span>
+        <div>
+          <span id="visualizeStatSort">Quicksort</span><span id="visualizeStatSwitchContainer" style="display: none;">, until <span id="visualizeStatSwitchLimit">0</span> items, then <span id="visualizeStatSwitchSort">Insertion Sort</span></span><span id="visualizeStatDelayContainer" style="display: none;">, with <span id="visualizeStatDelay">0</span>ms delay</span>
+        </div>
+        <div>
+          Array Length: <span id="visualizeStatLength">0</span>
+          Comparisons: <span id="visualizeStatComparisons">0</span>
+          <span id="visualizeStatsOperationLabel">Swaps</span>: <span id="visualizeStatSwaps">0</span>
+        </div>
       </div>
     </div>
   </section>
@@ -133,9 +138,19 @@
       const switchFunction = document.getElementById("visualizeSwitchFunction").value;
       const shuffled = document.getElementById("visualizeShuffle").checked;
       const reversed = document.getElementById("visualizeReverse").checked;
+
+      document.getElementById("visualizeStatSort").textContent = document.querySelector("#visualizeSort [value=" + sort + "]").textContent;
+
+      document.getElementById("visualizeStatSwitchContainer").style.display = (switchLimit > 0 && !document.getElementById("visualizeSwitchLimit").disabled) ? 'inline' : 'none';
+      document.getElementById("visualizeStatSwitchLimit").textContent = switchLimit;
+      document.getElementById("visualizeStatSwitchSort").textContent = document.querySelector("#visualizeSwitchFunction [value=" + switchFunction + "]").textContent;
+      document.getElementById("visualizeStatDelayContainer").style.display = delay > 0 ? 'inline' : 'none';
+      document.getElementById("visualizeStatDelay").textContent = delay;
+
       document.getElementById("visualizeStatLength").textContent = count;
       document.getElementById("visualizeStatComparisons").textContent = "0";
       document.getElementById("visualizeStatSwaps").textContent = "0";
+
       if (sort === 'mergesort') {
         document.getElementById("visualizeStatsOperationLabel").textContent = "Inserts";
       } else {
@@ -232,32 +247,36 @@
           arr[index2].libSortIndex = temp;
         },
         insertFunction: (arr, index, element) => {
-          runInTime(() => {
-            visualize.children[index].classList.add("swap");
-            document.getElementById("visualizeStatSwaps").textContent =
-              parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
-          });
-          runInTime(((change) => {
+          runInTime(((element) => {
+            return () => {
+              visualize.children[index].classList.add("swap");
+              document.getElementById("visualizeStatSwaps").textContent =
+                parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
+            }
+          })(visualize.children[index]));
+          runInTime(((element, change) => {
             return () => {
               if (mode === "height") {
-                visualize.children[index].style.transform = change.libSortTransformScale;
+                element.style.transform = change.libSortTransformScale;
               } else {
-                visualize.children[index].style.backgroundColor = change.libSortColor;
+                element.style.backgroundColor = change.libSortColor;
               }
             }
-          })({
+          })(visualize.children[index], {
             libSortTransformScale: element.libSortTransformScale,
             libSortColor: element.libSortColor
           }), Math.floor(delay / 2));
-          runInTime(() => {
-            visualize.children[index].classList.remove("swap");
-          }, Math.floor(delay / 2));
+          runInTime(((element) => {
+            return () => {
+              visualize.children[index].classList.remove("swap");
+            }
+          })(visualize.children[index]), Math.floor(delay / 2));
           arr[index] = element;
         },
         sortedCallbackFunction: (arr) => {
           if (sort === 'mergesort') {
-            const indexes = _.map(arr, (element) => children.indexOf(element));
-            runInTime(() => _.forEach(indexes, (index) => visualize.children[index].classList.add("sorted")));
+            const elements = _.map(arr, (element) => visualize.children[children.indexOf(element)]);
+            runInTime(() => _.forEach(elements, (element) => element.classList.add("sorted")));
           } else {
             runInTime(() => _.forEach(arr, (el) => el.classList.add("sorted")));
           }
