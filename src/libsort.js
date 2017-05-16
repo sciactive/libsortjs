@@ -59,6 +59,11 @@ export function quicksort(arr, options, recursing) {
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + 2));
     return arr;
   }
+  // Select the median of three as the pivot.
+  const lIndex = offset;
+  const mIndex = offset + Math.floor(length / 2);
+  const hIndex = offset + length - 1;
+  
   let pivotIndex = offset + length - 1;
   // Swap an item from the middle of the list into the pivot index. Choosing a
   // pivot in the middle avoids worst time case when the list is already sorted.
