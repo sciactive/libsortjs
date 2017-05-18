@@ -63,7 +63,7 @@ export function quicksort(arr, options, recursing) {
   const lIndex = offset;
   const mIndex = offset + Math.floor(length / 2);
   const hIndex = offset + length - 1;
-  
+
   let pivotIndex = offset + length - 1;
   // Swap an item from the middle of the list into the pivot index. Choosing a
   // pivot in the middle avoids worst time case when the list is already sorted.
@@ -240,17 +240,47 @@ export function heapsort(arr, options) {
   }
 
   // BEGIN HEAPSORT
+  function sort() {
+    buildMaxHeap();
+    for (let i = length - 1; i > 0; i--) {
+      swapFunction(arr, offset, offset + i);
+      if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset + i, offset + i + 1));
+      length--;
+      heapify(0);
+    }
+    if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + 1));
+  }
+
+  function buildMaxHeap() {
+    for (let i = Math.floor((length - 1) / 2); i >= 0; i--) {
+      heapify(i);
+    }
+  }
+
+  function heapify(i) {
+    const left = i * 2;
+    const right = left + 1;
+    let max;
+
+    if ((left <= length - 1) && compareFunction(arr[offset + left], arr[offset + i]) > 0) {
+      max = left;
+    } else {
+      max = i;
+    }
+    if ((right <= length - 1) && compareFunction(arr[offset + right], arr[offset + max]) > 0) {
+      max = right;
+    }
+
+    if (max !== i) {
+      swapFunction(arr, offset + i, offset + max);
+      heapify(max);
+    }
+  }
+
+  sort();
   // END HEAPSORT
 
   return arr;
-}
-
-function buildMaxHeap(arr, options) {
-
-}
-
-function heapify(arr, options, i) {
-
 }
 
 export function shellsort(arr, options) {
@@ -321,6 +351,62 @@ export function insertionsort(arr, options) {
   }
   if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
   // END INSERTIONSORT
+
+  return arr;
+}
+
+export function selectionsort(arr, options) {
+  let offset = 0,
+      length = arr.length - offset,
+      compareFunction = defaultCompareFunction,
+      swapFunction = defaultSwapFunction,
+      sortedCallbackFunction = null;
+  if (typeof options === "function") {
+    compareFunction = options;
+  } else if (options !== undefined) {
+  	if (options.offset !== undefined) offset = options.offset;
+    if (options.length !== undefined) length = options.length;
+  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
+  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
+  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+  }
+
+  // BEGIN SELECTIONSORT
+  for (let i = offset; i < offset + length; i++) {
+    let min = i;
+    for (let k = i + 1; k < offset + length; k++) {
+      if (compareFunction(arr[k], arr[min]) < 0) {
+        min = k;
+      }
+    }
+    if (min !== i) {
+      swapFunction(arr, i, min);
+    }
+    if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(i, i + 1));
+  }
+  // END SELECTIONSORT
+
+  return arr;
+}
+
+export function cocktailshakersort(arr, options) {
+  let offset = 0,
+      length = arr.length - offset,
+      compareFunction = defaultCompareFunction,
+      swapFunction = defaultSwapFunction,
+      sortedCallbackFunction = null;
+  if (typeof options === "function") {
+    compareFunction = options;
+  } else if (options !== undefined) {
+  	if (options.offset !== undefined) offset = options.offset;
+    if (options.length !== undefined) length = options.length;
+  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
+  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
+  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+  }
+
+  // BEGIN COCKTAILSHAKERSORT
+  // END COCKTAILSHAKERSORT
 
   return arr;
 }

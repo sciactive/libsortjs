@@ -17,19 +17,23 @@
       <select id="compareSort1" onchange="document.getElementById('compareSwitchLimit1').disabled = document.getElementById('compareSwitchFunction1').disabled = ['quicksort', 'shellsort'].indexOf(this.value) === -1;">
         <option value="quicksort">Quicksort</option>
         <option value="mergesort">Merge Sort</option>
+        <option value="heapsort">Heapsort</option>
         <option value="shellsort">Shellsort</option>
+        <option value="selectionsort">Selection Sort</option>
         <option value="insertionsort">Insertion Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
         <option value="native">Native (Browser)</option>
       </select>
-      Switch Limit: <input type="number" id="compareSwitchLimit1" min="0" value="0" />
+      Switch Limit: <input type="number" id="compareSwitchLimit1" min="0" value="100" />
       Switch Sort:
       <select id="compareSwitchFunction1">
         <option value="quicksort">Quicksort</option>
         <option value="mergesort">Merge Sort</option>
-        <option value="shellsort">Shellsort</option>
-        <option value="insertionsort" selected>Insertion Sort</option>
+        <option value="heapsort">Heapsort</option>
+        <option value="shellsort" selected>Shellsort</option>
+        <option value="selectionsort">Selection Sort</option>
+        <option value="insertionsort">Insertion Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
       </select>
@@ -38,7 +42,9 @@
       <select id="compareSort2" onchange="document.getElementById('compareSwitchLimit2').disabled = document.getElementById('compareSwitchFunction2').disabled = ['quicksort', 'shellsort'].indexOf(this.value) === -1;">
         <option value="quicksort">Quicksort</option>
         <option value="mergesort">Merge Sort</option>
+        <option value="heapsort">Heapsort</option>
         <option value="shellsort">Shellsort</option>
+        <option value="selectionsort">Selection Sort</option>
         <option value="insertionsort">Insertion Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
@@ -49,8 +55,10 @@
       <select id="compareSwitchFunction2" disabled>
         <option value="quicksort">Quicksort</option>
         <option value="mergesort">Merge Sort</option>
-        <option value="shellsort">Shellsort</option>
-        <option value="insertionsort" selected>Insertion Sort</option>
+        <option value="heapsort">Heapsort</option>
+        <option value="shellsort" selected>Shellsort</option>
+        <option value="selectionsort">Selection Sort</option>
+        <option value="insertionsort">Insertion Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
       </select>
@@ -85,7 +93,9 @@
         ">
         <option value="quicksort">Quicksort</option>
         <option value="mergesort">Merge Sort</option>
+        <option value="heapsort">Heapsort</option>
         <option value="shellsort">Shellsort</option>
+        <option value="selectionsort">Selection Sort</option>
         <option value="insertionsort">Insertion Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
@@ -97,8 +107,10 @@
       <select id="visualizeSwitchFunction">
         <option value="quicksort">Quicksort</option>
         <option value="mergesort">Merge Sort</option>
-        <option value="shellsort">Shellsort</option>
-        <option value="insertionsort" selected>Insertion Sort</option>
+        <option value="heapsort">Heapsort</option>
+        <option value="shellsort" selected>Shellsort</option>
+        <option value="selectionsort">Selection Sort</option>
+        <option value="insertionsort">Insertion Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
       </select>
