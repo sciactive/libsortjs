@@ -60,157 +60,39 @@ export function quicksort(arr, options, recursing) {
     return arr;
   }
   // Select the median of three as the pivot and swap into place.
-  const hIndex = offset + length - 1;
   const mIndex = offset + Math.floor(length / 2);
-  const lIndex = offset;
-  const pivotIndex = hIndex;
-  // console.log("out of: ", [arr[lIndex], arr[mIndex], arr[hIndex]]);
-  const lm = compareFunction(arr[lIndex], arr[mIndex]);
-  const lh = compareFunction(arr[lIndex], arr[hIndex]);
-  const mh = compareFunction(arr[mIndex], arr[hIndex]);
-  // Start from the points after where we've already checked looking for the
-  // pivot.
-  let curIndex = offset + 1;
-  let lastIndex = offset + length - 3;
-  if (lm < 0) {
-    if (mh <= 0) {
-      // 0, 1, 2
-      // 0, 1, 1
-      if (length === 3) {
-        // Nothing to move.
-        if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
-        return arr;
-      } else {
-        swapFunction(arr, mIndex, hIndex);
-        if (hIndex - 1 !== mIndex) swapFunction(arr, mIndex, hIndex - 1);
-      }
-    } else if (lh < 0) {
-      // 0, 2, 1
-      if (length === 3) {
-        swapFunction(arr, mIndex, hIndex);
-        if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
-        return arr;
-      } else {
-        if (hIndex - 1 !== mIndex) swapFunction(arr, mIndex, hIndex - 1);
-      }
-    } else if (lh > 0) {
-      // 1, 2, 0
-      if (length === 3) {
-        swapFunction(arr, mIndex, hIndex);
-        swapFunction(arr, lIndex, mIndex);
-        if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
-        return arr;
-      } else {
-        swapFunction(arr, lIndex, hIndex);
-        if (hIndex - 1 !== mIndex) swapFunction(arr, mIndex, hIndex - 1);
+  const hIndex = mIndex + 1;
+  const lIndex = mIndex - 1;
+  const pivotIndex = offset + length - 1;
+  let median = lIndex;
+  if (length > 5) {
+    // I don't move the other elements because it kills the algorithm on
+    // reversed arrays.
+    const lm = compareFunction(arr[lIndex], arr[mIndex]);
+    const mh = compareFunction(arr[mIndex], arr[hIndex]);
+    const lh = compareFunction(arr[lIndex], arr[hIndex]);
+    if (lm < 0) {
+      if (mh < 0) {
+        median = mIndex;
+      } else if (lh < 0) {
+        median = hIndex;
       }
     } else {
-      // 0, 1, 0
-      if (length === 3) {
-        swapFunction(arr, mIndex, hIndex);
-        if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
-        return arr;
-      } else {
-        if (hIndex - 2 !== lIndex) swapFunction(arr, lIndex, hIndex - 2);
-        if (hIndex - 1 !== mIndex) swapFunction(arr, mIndex, hIndex - 1);
-        // Set indexes, since our pivot was equal to our lowest.
-        curIndex = offset;
-        lastIndex = offset + length - 4;
-      }
-    }
-  } else if (lm > 0) {
-    if (lh <= 0) {
-      // 1, 0, 2
-      // 1, 0, 1
-      if (length === 3) {
-        swapFunction(arr, lIndex, mIndex);
-        if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
-        return arr;
-      } else {
-        swapFunction(arr, lIndex, mIndex);
-        swapFunction(arr, mIndex, hIndex);
-        if (hIndex - 1 !== mIndex) swapFunction(arr, mIndex, hIndex - 1);
-      }
-    } else if (mh < 0) {
-      // 2, 0, 1
-      if (length === 3) {
-        swapFunction(arr, lIndex, mIndex);
-        swapFunction(arr, mIndex, hIndex);
-        if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
-        return arr;
-      } else {
-        swapFunction(arr, lIndex, mIndex);
-        if (hIndex - 1 !== mIndex) swapFunction(arr, mIndex, hIndex - 1);
-      }
-    } else if (mh > 0) {
-      // 2, 1, 0
-      if (length === 3) {
-        swapFunction(arr, lIndex, hIndex);
-        if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
-        return arr;
-      } else {
-        swapFunction(arr, lIndex, hIndex);
-        swapFunction(arr, mIndex, hIndex);
-        if (hIndex - 1 !== mIndex) swapFunction(arr, mIndex, hIndex - 1);
-      }
-    } else {
-      // 1, 0, 0
-      if (length === 3) {
-        swapFunction(arr, lIndex, hIndex);
-        if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
-        return arr;
-      } else {
-        if (hIndex - 2 !== lIndex) swapFunction(arr, lIndex, hIndex - 2);
-        if (hIndex - 1 !== mIndex) swapFunction(arr, mIndex, hIndex - 1);
-        // Set pivot offset, since our pivot was equal to our lowest.
-        curIndex = offset;
-        lastIndex = offset + length - 4;
-      }
-    }
-  } else {
-    if (mh < 0) {
-      // 0, 0, 1
-      if (length === 3) {
-        // Nothing to move.
-        if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
-        return arr;
-      } else {
-        swapFunction(arr, mIndex, hIndex);
-        if (hIndex - 2 !== lIndex) swapFunction(arr, lIndex, hIndex - 2);
-        if (hIndex - 1 !== mIndex) swapFunction(arr, mIndex, hIndex - 1);
-        // Set pivot offset, since our pivot was equal to our lowest.
-        curIndex = offset;
-        lastIndex = offset + length - 4;
-      }
-    } else if (mh > 0) {
-      // 1, 1, 0
-      if (length === 3) {
-        swapFunction(arr, lIndex, hIndex);
-        if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
-        return arr;
-      } else {
-        swapFunction(arr, lIndex, hIndex);
-        if (hIndex - 1 !== mIndex) swapFunction(arr, mIndex, hIndex - 1);
-      }
-    } else {
-      // 0, 0, 0
-      if (length === 3) {
-        // Nothing to move.
-        if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
-        return arr;
-      } else {
-        if (hIndex - 2 !== lIndex) swapFunction(arr, lIndex, hIndex - 2);
-        if (hIndex - 1 !== mIndex) swapFunction(arr, mIndex, hIndex - 1);
-        // Set pivot offset, since our pivot was equal to our lowest.
-        curIndex = offset;
-        lastIndex = offset + length - 4;
+      if (mh > 0) {
+        median = mIndex;
+      } else if (lh > 0) {
+        median = hIndex;
       }
     }
   }
+  if (median !== pivotIndex) swapFunction(arr, median, pivotIndex);
   const pivot = arr[pivotIndex];
-  // console.log("chose pivot: "+pivot);
 
-  let everythingIsEqual = curIndex <= lastIndex;
+  // Start from the points after where we've already checked looking for the
+  // pivot.
+  let curIndex = offset;
+  let lastIndex = offset + length - 2;
+  let everythingIsEqual = true;
   while (curIndex <= lastIndex) {
   	// Compare the item with the pivot.
   	const compare = compareFunction(arr[curIndex], pivot);
