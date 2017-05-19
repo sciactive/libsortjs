@@ -406,6 +406,38 @@ export function cocktailshakersort(arr, options) {
   }
 
   // BEGIN COCKTAILSHAKERSORT
+  let nRight = length;
+  let nLeft = offset;
+  do {
+    let m = nLeft, swaps = false;
+    for (let i = m + 1; i < nRight; i++) {
+      if (compareFunction(arr[i - 1], arr[i]) > 0) {
+        swaps = true;
+        swapFunction(arr, i - 1, i);
+        m = i;
+      }
+    }
+    if (!swaps) {
+      if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
+      break;
+    }
+    if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(m, nRight));
+    nRight = m;
+    m = nRight - 1; swaps = false;
+    for (let i = m - 1; i >= nLeft; i--) {
+      if (compareFunction(arr[i], arr[i + 1]) > 0) {
+        swaps = true;
+        swapFunction(arr, i, i + 1);
+        m = i;
+      }
+    }
+    if (!swaps) {
+      if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
+      break;
+    }
+    if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(nLeft, m + 1));
+    nLeft = m + 1;
+  } while (nRight != nLeft);
   // END COCKTAILSHAKERSORT
 
   return arr;
@@ -430,14 +462,19 @@ export function bubblesort(arr, options) {
   // BEGIN BUBBLESORT
   let n = length;
   do {
-    let m = 0;
-    for (let i = offset + 1; i < n; i++) {
+    let m = offset, swaps = false;
+    for (let i = m + 1; i < n; i++) {
       if (compareFunction(arr[i - 1], arr[i]) > 0) {
+        swaps = true;
         swapFunction(arr, i - 1, i);
         m = i;
       }
     }
-    if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(m, offset + length));
+    if (!swaps) {
+      if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
+      break;
+    }
+    if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(m, n));
     n = m;
   } while (n != 0);
   // END BUBBLESORT
@@ -478,15 +515,68 @@ export function bogosort(arr, options) {
       // Decrease counter by 1.
       counter--;
       // And swap the last element with it.
-      swapFunction(arr, offset + counter, index);
+      if (offset + counter !== index) {
+        swapFunction(arr, offset + counter, index);
+      }
     }
   }
 
   while (!isArraySorted()) {
-    shuffle()
+    shuffle();
   };
   if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
   // END BOGOSORT
+
+  return arr;
+}
+
+export function bogobogosort(arr, options) {
+  let offset = 0,
+      length = arr.length - offset,
+      compareFunction = defaultCompareFunction,
+      swapFunction = defaultSwapFunction,
+      sortedCallbackFunction = null;
+  if (typeof options === "function") {
+    compareFunction = options;
+  } else if (options !== undefined) {
+  	if (options.offset !== undefined) offset = options.offset;
+    if (options.length !== undefined) length = options.length;
+  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
+  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
+  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+  }
+
+  // BEGIN BOGOBOGOSORT
+  function isArraySorted(end) {
+    for (let i = offset + 1; i < offset + end + 1; i++) {
+      if (compareFunction(arr[i - 1], arr[i]) > 0) return false;
+    }
+    return true;
+  }
+
+  function shuffle(end) {
+    let counter = end + 1;
+    // While there are elements in the array.
+    while (counter > 0) {
+      // Pick a random index.
+      let index = offset + Math.floor(Math.random() * counter);
+      // Decrease counter by 1.
+      counter--;
+      // And swap the last element with it.
+      if (offset + counter !== index) {
+        swapFunction(arr, offset + counter, index);
+      }
+    }
+  }
+
+  for (let i = offset; i < offset + length; i++) {
+    shuffle(i);
+    if (!isArraySorted(i)) {
+      i = offset - 1;
+    }
+  }
+  if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
+  // END BOGOBOGOSORT
 
   return arr;
 }

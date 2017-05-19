@@ -64,41 +64,54 @@ header, section {
 #visualize.height div {
   height: 100%;
 }
-#visualize.color div, #visualize.grayscale div {
-  height: 48%;
+/*#visualize.color div::before,
+#visualize.grayscale div::before,*/
+#visualize.color div,
+#visualize.grayscale div {
+  height: 0;
   position: absolute;
   left: 50%;
-  top: 1%;
-  border-bottom-left-radius: 100%;
-  border-bottom-right-radius: 100%;
+  bottom: 50%;
+  border-left: 1.570796vh solid transparent;
+  border-right: 1.570796vh solid transparent;
+  background-color: transparent;
+  border-top-width: 100vh;
+  border-top-style: solid;
   box-sizing: border-box;
 }
 #visualize.height div.compare {
   background-color: #f9ff87;
 }
 #visualize.color div.compare {
-  border-top: 8px solid #f9ff87;
+  border-top-style: groove;
 }
 #visualize.grayscale div.compare {
-  outline: 3px dotted #fff;
+  border-top-style: groove;
 }
 #visualize.height div.swap {
   background-color: #ffa0a0;
 }
 #visualize.color div.swap {
-  border-top: 8px solid #ffa0a0;
+  border-top-style: inset;
 }
 #visualize.grayscale div.swap {
-  outline: 3px dashed #fff;
+  border-top-width: 105vh;
 }
 #visualize.height div.sorted {
   background-color: #a6ff8c;
 }
 #visualize.color div.sorted {
-  border-top: 3px solid #a6ff8c;
+  border-top-width: 99vh;
 }
+/*#visualize.color div.sorted::before {
+  content: " ";
+  position: absolute;
+  top: -100vh;
+  border-left-width: 0;
+  border-top: 1vh solid #a6ff8c;
+}*/
 #visualize.grayscale div.sorted {
-  border-top: 5px ridge #666;
+  border-top-width: 99vh;
 }
 
 /* Totally crazy styles. */

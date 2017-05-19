@@ -21,8 +21,10 @@
         <option value="shellsort">Shellsort</option>
         <option value="selectionsort">Selection Sort</option>
         <option value="insertionsort">Insertion Sort</option>
+        <option value="cocktailshakersort">Cocktail Shaker Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
+        <option value="bogobogosort">Bogobogosort</option>
         <option value="native">Native (Browser)</option>
       </select>
       Switch Limit: <input type="number" id="compareSwitchLimit1" min="0" value="100" />
@@ -34,8 +36,10 @@
         <option value="shellsort" selected>Shellsort</option>
         <option value="selectionsort">Selection Sort</option>
         <option value="insertionsort">Insertion Sort</option>
+        <option value="cocktailshakersort">Cocktail Shaker Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
+        <option value="bogobogosort">Bogobogosort</option>
       </select>
       <br /><br />
       Sort 2:
@@ -46,8 +50,10 @@
         <option value="shellsort">Shellsort</option>
         <option value="selectionsort">Selection Sort</option>
         <option value="insertionsort">Insertion Sort</option>
+        <option value="cocktailshakersort">Cocktail Shaker Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
+        <option value="bogobogosort">Bogobogosort</option>
         <option value="native" selected>Native (Browser)</option>
       </select>
       Switch Limit: <input type="number" id="compareSwitchLimit2" min="0" value="0" disabled />
@@ -59,8 +65,10 @@
         <option value="shellsort" selected>Shellsort</option>
         <option value="selectionsort">Selection Sort</option>
         <option value="insertionsort">Insertion Sort</option>
+        <option value="cocktailshakersort">Cocktail Shaker Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
+        <option value="bogobogosort">Bogobogosort</option>
       </select>
       <br /><br />
       Items: <input type="number" id="compareElements" min="1" value="100000" />
@@ -97,8 +105,10 @@
         <option value="shellsort">Shellsort</option>
         <option value="selectionsort">Selection Sort</option>
         <option value="insertionsort">Insertion Sort</option>
+        <option value="cocktailshakersort">Cocktail Shaker Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
+        <option value="bogobogosort">Bogobogosort</option>
       </select>
       Items: <input type="number" id="visualizeElements" min="0" value="100" />
       Max Delta: <input type="number" id="visualizeMaxDelta" min="-1" value="0" />
@@ -111,8 +121,10 @@
         <option value="shellsort" selected>Shellsort</option>
         <option value="selectionsort">Selection Sort</option>
         <option value="insertionsort">Insertion Sort</option>
+        <option value="cocktailshakersort">Cocktail Shaker Sort</option>
         <option value="bubblesort">Bubble Sort</option>
         <option value="bogosort">Bogosort</option>
+        <option value="bogobogosort">Bogobogosort</option>
       </select>
       Shuffle: <input type="checkbox" id="visualizeShuffle" checked />
       Reverse: <input type="checkbox" id="visualizeReverse" />
@@ -174,17 +186,20 @@
       visualize.classList.add(mode);
       if (perspective) visualize.classList.add("perspective");
       const children = [];
-      const colorModeWidth = (1 / count * 100 * Math.PI) + "vh";
-      const colorModePaddingBottom = (1 / count * 100) / Math.sqrt(2) + "%";
+      const colorModeTheta = (1 / count * 360);
+      const colorModeDistanceBetweenPoints = ((1 / count * 100 * Math.PI) * 2);
+      const colorModeWidth = (Math.tan((colorModeTheta * Math.PI/180) / 2) * /* height of element */ 100 * 2) /* (1 + (Math.log(count + 1) / Math.E) * .1) /* a little extra to prevent moire */;
       for (let i = 1; i <= count; i++) {
         const el = document.createElement("div");
         if (mode === "height") {
           el.libSortTransformScale = "scaleY(" + (i / count) + ")";
         } else {
-          el.style.width = colorModeWidth;
-          el.style.paddingBottom = colorModePaddingBottom;
+          el.style.width = colorModeWidth + "vh";
+          el.style.borderLeftWidth = (colorModeWidth / 2) + "vh";
+          el.style.borderRightWidth = (colorModeWidth / 2) + "vh";
+          el.style.marginLeft = (colorModeWidth / 2 * -1) + "vh";
           if (mode === "color") {
-            el.libSortColor = "hsl(" + (i / count * 360) + ", 100%, 40%)";
+            el.libSortColor = "hsl(" + (i / count * 360) + ", 100%, 58%)";
           } else {
             el.libSortColor = "hsl(0, 0%, " + (i / count * 100) + "%)";
           }
@@ -200,9 +215,9 @@
         if (mode === "height") {
           el.style.transform = el.libSortTransformScale;
         } else {
-          el.libSortTransformRotate = "rotate(" + (i / children.length * 360) + "deg)";
+          el.libSortTransformRotate = "rotate(" + (colorModeTheta * i) + "deg) scale(.35)";
           el.style.transform = el.libSortTransformRotate;
-          el.style.backgroundColor = el.libSortColor;
+          el.style.borderTopColor = el.libSortColor;
         }
         frag.appendChild(el);
       }
@@ -246,8 +261,8 @@
               const temp = a.libSortColor;
               a.libSortColor = b.libSortColor;
               b.libSortColor = temp;
-              a.style.backgroundColor = a.libSortColor;
-              b.style.backgroundColor = b.libSortColor;
+              a.style.borderTopColor = a.libSortColor;
+              b.style.borderTopColor = b.libSortColor;
             }
           }, Math.floor(delay / 2));
           runInTime(() => {
@@ -271,7 +286,7 @@
               if (mode === "height") {
                 element.style.transform = change.libSortTransformScale;
               } else {
-                element.style.backgroundColor = change.libSortColor;
+                element.style.borderTopColor = change.libSortColor;
               }
             }
           })(visualize.children[index], {
