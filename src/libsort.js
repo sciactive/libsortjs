@@ -23,6 +23,65 @@ export function defaultInsertFunction(arr, index, element) {
   arr[index] = element;
 }
 
+export function zipsort(arr, options, recursing) {
+  let offset = 0,
+      length = arr.length - offset,
+      compareFunction = defaultCompareFunction,
+      swapFunction = defaultSwapFunction,
+      sortedCallbackFunction = null;
+  if (typeof options === "function") {
+    compareFunction = options;
+  } else if (options !== undefined) {
+  	if (options.offset !== undefined) offset = options.offset;
+    if (options.length !== undefined) length = options.length;
+  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
+  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
+  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+  }
+
+  if (length <= 1) {
+    if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
+    return arr;
+  }
+
+  // BEGIN ZIPSORT
+  // Let's see if we just need to make one quick comparison.
+  if (length === 2) {
+  	if (compareFunction(arr[offset], arr[offset + 1]) > 0) {
+    	// Our one element is bigger than its sibling, so swap them.
+      swapFunction(arr, offset, offset + 1);
+      if (recursing) return true;
+    }
+    if (recursing) return false;
+    return arr;
+  }
+  const mid = Math.floor(length / 2);
+  let swapped;
+  do {
+    swapped = false;
+    if ((mid + 1) > 1) {
+      swapped = zipsort(arr, {offset: offset, length: (mid + 1), compareFunction, swapFunction, sortedCallbackFunction}, true) && swapped;
+    }
+    if (length - mid > 1) {
+      swapped = zipsort(arr, {offset: offset + mid, length: length - mid, compareFunction, swapFunction, sortedCallbackFunction}, true) && swapped;
+    }
+    for (let i = 0; i < mid; i++) {
+      let iRight = length - 1 - i;
+      if (i === iRight) iRight++;
+    	if (compareFunction(arr[offset + i], arr[offset + iRight]) > 0) {
+        swapFunction(arr, offset + i, offset + iRight);
+        swapped = true;
+      }
+    }
+  } while (!recursing && swapped);
+  if (!recursing && sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
+
+  if (recursing) return swapped;
+  // END ZIPSORT
+
+  return arr;
+}
+
 export function quicksort(arr, options, recursing) {
   let offset = 0,
       length = arr.length - offset,
