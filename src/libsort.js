@@ -59,38 +59,57 @@ export function zipsort(arr, options, recursing) {
   }
   let swapped;
   const mid = Math.floor(length / 2);
+  const oneThird = Math.floor(length / 3);
+  const twoThirds = Math.floor(length * 2 / 3);
   do {
-    swapped = false;
+    do {
+      swapped = false;
+      for (let i = 0; i <= mid; i++) {
+        let iRight = mid - 1 + i;
+      	if (compareFunction(arr[offset + i], arr[offset + iRight]) > 0) {
+          swapFunction(arr, offset + i, offset + iRight);
+          swapped = true;
+        }
+      }
+      for (let i = 0; i <= mid; i++) {
+        let iRight = length - 1 - i;
+        if (i > iRight) break;
+        if (i === iRight) iRight++;
+      	if (compareFunction(arr[offset + i], arr[offset + iRight]) > 0) {
+          swapFunction(arr, offset + i, offset + iRight);
+          swapped = true;
+        }
+      }
+      for (let i = mid; i >= 0; i--) {
+        let iRight = mid - 1 + i;
+      	if (compareFunction(arr[offset + i], arr[offset + iRight]) > 0) {
+          swapFunction(arr, offset + i, offset + iRight);
+          swapped = true;
+        }
+      }
+      // for (let i = offset + 1; i < length; i++) {
+      //   if (compareFunction(arr[i - 1], arr[i]) > 0) {
+      //     swapFunction(arr, i - 1, i);
+      //     swapped = true;
+      //   }
+      // }
+    } while (swapped);
     if ((mid + 1) > 1) {
       swapped = zipsort(arr, {offset: offset, length: (mid + 1), compareFunction, swapFunction, sortedCallbackFunction}, true) && swapped;
     }
     if (length - mid > 1) {
       swapped = zipsort(arr, {offset: offset + mid, length: length - mid, compareFunction, swapFunction, sortedCallbackFunction}, true) && swapped;
     }
-    for (let i = 0; i <= mid; i++) {
-      let iRight = mid - 1 + i;
-    	if (compareFunction(arr[offset + i], arr[offset + iRight]) > 0) {
-        swapFunction(arr, offset + i, offset + iRight);
-        swapped = true;
+  } while (!recursing && swapped);
+  if (!recursing) {
+    for (let i = offset + 1; i < offset + length; i++) {
+      let k = i;
+      while (k - 1 >= offset && compareFunction(arr[k - 1], arr[k]) > 0) {
+        swapFunction(arr, k - 1, k);
+        k -= 1;
       }
     }
-    for (let i = 0; i <= mid; i++) {
-      let iRight = length - 1 - i;
-      if (i > iRight) break;
-      if (i === iRight) iRight++;
-    	if (compareFunction(arr[offset + i], arr[offset + iRight]) > 0) {
-        swapFunction(arr, offset + i, offset + iRight);
-        swapped = true;
-      }
-    }
-    for (let i = mid; i >= 0; i--) {
-      let iRight = mid - 1 + i;
-    	if (compareFunction(arr[offset + i], arr[offset + iRight]) > 0) {
-        swapFunction(arr, offset + i, offset + iRight);
-        swapped = true;
-      }
-    }
-  } while (swapped);
+  }
   if (!recursing && sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
 
   if (recursing) return swapped;

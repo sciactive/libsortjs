@@ -11,6 +11,10 @@ section {
 h2 {
   margin: 0 0 1em;
 }
+#outputHeader {
+  flex: 100%;
+  text-align: center;
+}
 #outputContainer, #visualizeContainer {
   font-size: 1.1em;
   margin-top: 20px;
@@ -24,6 +28,7 @@ h2 {
   display: inline-flex;
   width: auto;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: stretch;
   justify-content: flex-start;
 }
