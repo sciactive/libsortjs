@@ -26,6 +26,7 @@ export function defaultInsertFunction(arr, index, element) {
 export function zipsort(arr, options, recursing) {
   let offset = 0,
       length = arr.length - offset,
+      denominator = 2,
       compareFunction = defaultCompareFunction,
       swapFunction = defaultSwapFunction,
       sortedCallbackFunction = null;
@@ -34,6 +35,7 @@ export function zipsort(arr, options, recursing) {
   } else if (options !== undefined) {
   	if (options.offset !== undefined) offset = options.offset;
     if (options.length !== undefined) length = options.length;
+    if (options.denominator !== undefined) denominator = options.denominator;
   	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
   	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
   	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
@@ -55,25 +57,51 @@ export function zipsort(arr, options, recursing) {
     if (recursing) return false;
     return arr;
   }
+  let swapped, swappedLeft = true, swappedRight = true;
+  let effectiveLength = length;
+  // do {
   const mid = Math.floor(length / 2);
-  let swapped;
+  let denom = denominator;
+  let fraction;
+  let allGood = false;
   do {
     swapped = false;
-    if ((mid + 1) > 1) {
-      swapped = zipsort(arr, {offset: offset, length: (mid + 1), compareFunction, swapFunction, sortedCallbackFunction}, true) && swapped;
-    }
-    if (length - mid > 1) {
-      swapped = zipsort(arr, {offset: offset + mid, length: length - mid, compareFunction, swapFunction, sortedCallbackFunction}, true) && swapped;
-    }
-    for (let i = 0; i < mid; i++) {
+    for (let i = 0; i <= mid; i++) {
       let iRight = length - 1 - i;
+      if (i > iRight) break;
       if (i === iRight) iRight++;
     	if (compareFunction(arr[offset + i], arr[offset + iRight]) > 0) {
         swapFunction(arr, offset + i, offset + iRight);
-        swapped = true;
+        swapped = swappedLeft = swappedRight = true;
       }
     }
+    // if ((mid + 1) > 1) {
+    //   swappedLeft = zipsort(arr, {offset: offset, length: (mid + 1), compareFunction, swapFunction, sortedCallbackFunction}, true);
+    //   swapped = swappedLeft && swapped;
+    // }
+    // if (length - mid > 1) {
+    //   swappedRight = zipsort(arr, {offset: offset + mid, length: length - mid, compareFunction, swapFunction, sortedCallbackFunction}, true);
+    //   swapped = swappedRight && swapped;
+    // }
+    fraction = Math.ceil(length / denom);
+    for (let o = 0; o < denom; o++) {
+      // Sort parts of the list.
+      const oOffset = offset + (fraction * o);
+      const oLength = Math.min(fraction, length - (oOffset - offset));
+      if (oLength > 1) {
+        swapped = zipsort(arr, {offset: oOffset, length: oLength, compareFunction, swapFunction, sortedCallbackFunction}, true) && swapped;
+      }
+    }
+    denom++;
+    if (swapped) allGood = false;
+    if (!swapped && !allGood) {
+      swapped = allGood = true;
+    }
   } while (!recursing && swapped);
+  //   if (!recursing) {
+  //     effectiveLength--;
+  //   }
+  // } while (!recursing && effectiveLength >= length - 4);
   if (!recursing && sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
 
   if (recursing) return swapped;

@@ -7,9 +7,69 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
 </head>
 <body>
-  <header>
-    <h1>LibSort.js</h1>
-  </header>
+  <section id="visualizeSection">
+    <h2>Visualize LibSort.js</h2>
+    <div>
+      Mode:
+      <select id="visualizeMode">
+        <option value="height">Height</option>
+        <option value="color">Color</option>
+        <option value="grayscale">Grayscale</option>
+      </select>
+      Perspective: <input type="checkbox" id="visualizePerspective" />
+      Delay: <input type="number" id="visualizeDelay" min="0" value="0" />
+      Sort:
+      <select id="visualizeSort" onchange="
+          document.getElementById('visualizeMaxDelta').disabled = ['quicksort', 'mergesort'].indexOf(this.value) === -1;
+          document.getElementById('visualizeSwitchLimit').disabled = document.getElementById('visualizeSwitchFunction').disabled = ['quicksort', 'shellsort'].indexOf(this.value) === -1;
+        ">
+        <option value="quicksort">Quicksort</option>
+        <option value="mergesort">Merge Sort</option>
+        <option value="heapsort">Heapsort</option>
+        <option value="shellsort">Shellsort</option>
+        <option value="zipsort">Zip Sort</option>
+        <option value="selectionsort">Selection Sort</option>
+        <option value="insertionsort">Insertion Sort</option>
+        <option value="cocktailshakersort">Cocktail Shaker Sort</option>
+        <option value="bubblesort">Bubble Sort</option>
+        <option value="bogosort">Bogosort</option>
+        <option value="bogobogosort">Bogobogosort</option>
+      </select>
+      Items: <input type="number" id="visualizeElements" min="0" value="100" />
+      Max Delta: <input type="number" id="visualizeMaxDelta" min="-1" value="0" />
+      Switch Limit: <input type="number" id="visualizeSwitchLimit" min="0" value="0" />
+      Switch Sort:
+      <select id="visualizeSwitchFunction">
+        <option value="quicksort">Quicksort</option>
+        <option value="mergesort">Merge Sort</option>
+        <option value="heapsort">Heapsort</option>
+        <option value="shellsort" selected>Shellsort</option>
+        <option value="zipsort">Zip Sort</option>
+        <option value="selectionsort">Selection Sort</option>
+        <option value="insertionsort">Insertion Sort</option>
+        <option value="cocktailshakersort">Cocktail Shaker Sort</option>
+        <option value="bubblesort">Bubble Sort</option>
+        <option value="bogosort">Bogosort</option>
+        <option value="bogobogosort">Bogobogosort</option>
+      </select>
+      Shuffle: <input type="checkbox" id="visualizeShuffle" checked />
+      Reverse: <input type="checkbox" id="visualizeReverse" />
+      <button onclick="doVisualize()">GO</button>
+    </div>
+    <div id="visualizeContainer">
+      <div id="visualize"></div>
+      <div id="visualizeStats">
+        <div>
+          <span id="visualizeStatSort">Quicksort</span><span id="visualizeStatSwitchContainer" style="display: none;">, until <span id="visualizeStatSwitchLimit">0</span> items, then <span id="visualizeStatSwitchSort">Insertion Sort</span></span><span id="visualizeStatDelayContainer" style="display: none;">, with <span id="visualizeStatDelay">0</span>ms delay</span>
+        </div>
+        <div>
+          Array Length: <span id="visualizeStatLength">0</span>
+          Comparisons: <span id="visualizeStatComparisons">0</span>
+          <span id="visualizeStatsOperationLabel">Swaps</span>: <span id="visualizeStatSwaps">0</span>
+        </div>
+      </div>
+    </div>
+  </section>
   <section id="compareSection">
     <h2>Compare Sorting Algorithms</h2>
     <div>
@@ -84,69 +144,6 @@
         <pre name="sort1"></pre>
         <pre name="sort2"></pre>
         <pre name="debug"></pre>
-      </div>
-    </div>
-  </section>
-  <section id="visualizeSection">
-    <h2>Visualize LibSort.js</h2>
-    <div>
-      Mode:
-      <select id="visualizeMode">
-        <option value="height">Height</option>
-        <option value="color">Color</option>
-        <option value="grayscale">Grayscale</option>
-      </select>
-      Perspective: <input type="checkbox" id="visualizePerspective" />
-      Delay: <input type="number" id="visualizeDelay" min="0" value="0" />
-      Sort:
-      <select id="visualizeSort" onchange="
-          document.getElementById('visualizeMaxDelta').disabled = ['quicksort', 'mergesort'].indexOf(this.value) === -1;
-          document.getElementById('visualizeSwitchLimit').disabled = document.getElementById('visualizeSwitchFunction').disabled = ['quicksort', 'shellsort'].indexOf(this.value) === -1;
-        ">
-        <option value="quicksort">Quicksort</option>
-        <option value="mergesort">Merge Sort</option>
-        <option value="heapsort">Heapsort</option>
-        <option value="shellsort">Shellsort</option>
-        <option value="zipsort">Zip Sort</option>
-        <option value="selectionsort">Selection Sort</option>
-        <option value="insertionsort">Insertion Sort</option>
-        <option value="cocktailshakersort">Cocktail Shaker Sort</option>
-        <option value="bubblesort">Bubble Sort</option>
-        <option value="bogosort">Bogosort</option>
-        <option value="bogobogosort">Bogobogosort</option>
-      </select>
-      Items: <input type="number" id="visualizeElements" min="0" value="100" />
-      Max Delta: <input type="number" id="visualizeMaxDelta" min="-1" value="0" />
-      Switch Limit: <input type="number" id="visualizeSwitchLimit" min="0" value="0" />
-      Switch Sort:
-      <select id="visualizeSwitchFunction">
-        <option value="quicksort">Quicksort</option>
-        <option value="mergesort">Merge Sort</option>
-        <option value="heapsort">Heapsort</option>
-        <option value="shellsort" selected>Shellsort</option>
-        <option value="zipsort">Zip Sort</option>
-        <option value="selectionsort">Selection Sort</option>
-        <option value="insertionsort">Insertion Sort</option>
-        <option value="cocktailshakersort">Cocktail Shaker Sort</option>
-        <option value="bubblesort">Bubble Sort</option>
-        <option value="bogosort">Bogosort</option>
-        <option value="bogobogosort">Bogobogosort</option>
-      </select>
-      Shuffle: <input type="checkbox" id="visualizeShuffle" checked />
-      Reverse: <input type="checkbox" id="visualizeReverse" />
-      <button onclick="doVisualize()">GO</button>
-    </div>
-    <div id="visualizeContainer">
-      <div id="visualize"></div>
-      <div id="visualizeStats">
-        <div>
-          <span id="visualizeStatSort">Quicksort</span><span id="visualizeStatSwitchContainer" style="display: none;">, until <span id="visualizeStatSwitchLimit">0</span> items, then <span id="visualizeStatSwitchSort">Insertion Sort</span></span><span id="visualizeStatDelayContainer" style="display: none;">, with <span id="visualizeStatDelay">0</span>ms delay</span>
-        </div>
-        <div>
-          Array Length: <span id="visualizeStatLength">0</span>
-          Comparisons: <span id="visualizeStatComparisons">0</span>
-          <span id="visualizeStatsOperationLabel">Swaps</span>: <span id="visualizeStatSwaps">0</span>
-        </div>
       </div>
     </div>
   </section>
