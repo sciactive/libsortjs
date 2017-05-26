@@ -137,10 +137,11 @@
       <br /><br />
       Items: <input type="number" id="compareElements" min="1" value="100000" />
       Rounds: <input type="number" id="compareRounds" min="1" value="4" />
-      <button onclick="doSort()">GO</button>
+      <button onclick="doCompare()">GO</button>
     </div>
     <div id="outputContainer">
       <div id="output">
+        <h3 id="outputHeader"></h3>
         <pre name="sort1"></pre>
         <pre name="sort2"></pre>
         <pre name="debug"></pre>
@@ -314,7 +315,7 @@
       });
     }
 
-    function doSort() {
+    function doCompare() {
       const sort1 = document.getElementById("compareSort1").value;
       const sort2 = document.getElementById("compareSort2").value;
       const count = parseInt(document.getElementById("compareElements").value);
@@ -325,9 +326,10 @@
       const switchFunction2 = document.getElementById("compareSwitchFunction2").value;
       const arrSkel = [...Array(count).keys()];
 
-      log("\n\n", "sort1", true);
-      log(count + " ITEM DEATHMATCH\n\n", "sort2", true);
-      log("\n\n", "debug", true);
+      logHeader(count + " ITEM DEATHMATCH");
+      log("", "sort1", true);
+      log("", "sort2", true);
+      log("", "debug", true);
       log("## " + (sort1 === "native" ? "Native Sort" : ("LibSort.js " + sort1)) + "   VS", "sort1");
       log("## " + (sort2 === "native" ? "Native Sort" : ("LibSort.js " + sort2)), "sort2");
       log("## Checking Array Equality\n", "debug");
@@ -450,6 +452,11 @@
         });
       });
       return timePromise;
+    }
+
+    function logHeader(msg) {
+      let output = document.querySelector("#outputHeader");
+      output.innerText = msg;
     }
 
     function log(msg, name, clearFirst) {
