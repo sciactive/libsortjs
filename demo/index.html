@@ -13,9 +13,10 @@
       <label>
         Mode:
         <select id="visualizeMode">
-          <option value="height">Height</option>
-          <option value="color">Color</option>
-          <option value="grayscale">Grayscale</option>
+          <option value="height">Bar</option>
+          <option value="color">Color Wheel</option>
+          <option value="line">Line</option>
+          <option value="grayscale">Grayscale Wheel</option>
         </select>
       </label>
       <label>
@@ -222,7 +223,7 @@
       }
       const visualize = document.getElementById("visualize");
       visualize.innerHTML = "";
-      visualize.classList.remove("height", "color", "grayscale", "perspective");
+      visualize.classList.remove("height", "color", "line", "grayscale", "perspective");
       visualize.classList.add(mode);
       if (perspective) visualize.classList.add("perspective");
       const children = [];
@@ -232,7 +233,9 @@
       for (let i = 1; i <= count; i++) {
         const el = document.createElement("div");
         if (mode === "height") {
-          el.libSortTransformScale = "scaleY(" + (i / count) + ")";
+          el.libSortTransform = "scaleY(" + (i / count) + ")";
+        } else if (mode === "line") {
+          el.libSortTransform = "translateY(-" + ((i / count * 100) - (1 / count * 100)) + "%) scaleY(" + (1 / count) + ")";
         } else {
           el.style.width = colorModeWidth + "vh";
           el.style.borderLeftWidth = (colorModeWidth / 2) + "vh";
@@ -252,8 +255,8 @@
       const frag = document.createDocumentFragment();
       for (let i = 0; i < children.length; i++) {
         let el = children[i];
-        if (mode === "height") {
-          el.style.transform = el.libSortTransformScale;
+        if (mode === "height" || mode === "line") {
+          el.style.transform = el.libSortTransform;
         } else {
           el.libSortTransformRotate = "rotate(" + (colorModeTheta * i) + "deg) scale(.35)";
           el.style.transform = el.libSortTransformRotate;
@@ -291,12 +294,12 @@
               parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
           });
           runInTime(() => {
-            if (mode === "height") {
-            	const temp = a.libSortTransformScale;
-              a.libSortTransformScale = b.libSortTransformScale;
-              b.libSortTransformScale = temp;
-              a.style.transform = a.libSortTransformScale;
-              b.style.transform = b.libSortTransformScale;
+            if (mode === "height" || mode === "line") {
+            	const temp = a.libSortTransform;
+              a.libSortTransform = b.libSortTransform;
+              b.libSortTransform = temp;
+              a.style.transform = a.libSortTransform;
+              b.style.transform = b.libSortTransform;
             } else {
               const temp = a.libSortColor;
               a.libSortColor = b.libSortColor;
@@ -323,14 +326,14 @@
           })(visualize.children[index]));
           runInTime(((element, change) => {
             return () => {
-              if (mode === "height") {
-                element.style.transform = change.libSortTransformScale;
+              if (mode === "height" || mode === "line") {
+                element.style.transform = change.libSortTransform;
               } else {
                 element.style.borderTopColor = change.libSortColor;
               }
             }
           })(visualize.children[index], {
-            libSortTransformScale: element.libSortTransformScale,
+            libSortTransform: element.libSortTransform,
             libSortColor: element.libSortColor
           }), Math.floor(delay / 2));
           runInTime(((element) => {

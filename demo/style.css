@@ -72,9 +72,12 @@ h2 {
   flex-grow: 1;
   transform-origin: bottom;
 }
-#visualize.height div {
+#visualize.height div, #visualize.line div {
   height: 100%;
   box-shadow: inset -1px -1px 2px 0px rgba(0,0,0,0.1);
+}
+#visualize.line div {
+  background: #fff;
 }
 /*#visualize.color div::before,
 #visualize.grayscale div::before,*/
@@ -91,7 +94,8 @@ h2 {
   border-top-style: solid;
   box-sizing: border-box;
 }
-#visualize.height div.compare {
+#visualize.height div.compare,
+#visualize.line div.compare {
   background-color: #f9ff87;
 }
 #visualize.color div.compare {
@@ -100,7 +104,8 @@ h2 {
 #visualize.grayscale div.compare {
   border-top-style: groove;
 }
-#visualize.height div.swap {
+#visualize.height div.swap,
+#visualize.line div.swap {
   background-color: #ffa0a0;
 }
 #visualize.color div.swap {
@@ -109,7 +114,8 @@ h2 {
 #visualize.grayscale div.swap {
   border-top-width: 105vh;
 }
-#visualize.height div.sorted {
+#visualize.height div.sorted,
+#visualize.line div.sorted {
   background-color: #a6ff8c;
 }
 #visualize.color div.sorted {
