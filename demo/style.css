@@ -1,8 +1,9 @@
 html, body {
-  font-family: Arial, sans-serif;
+  font-family: "Arial Narrow", Arial, sans-serif;
   color: #333;
   padding: 0;
   margin: 0;
+  font-size: 12px;
 }
 section {
   padding: 10px;
@@ -50,7 +51,7 @@ h2 {
   position: absolute;
   top: 5px;
   left: 5px;
-  font-size: .7em;
+  font-size: .85em;
 }
 #visualize {
   position: absolute;
@@ -73,6 +74,7 @@ h2 {
 }
 #visualize.height div {
   height: 100%;
+  box-shadow: inset -1px -1px 2px 0px rgba(0,0,0,0.1);
 }
 /*#visualize.color div::before,
 #visualize.grayscale div::before,*/
@@ -149,6 +151,7 @@ button, input, select {
   color: #333;
   border: 1px solid #333;
   font-weight: bold;
-  padding: 4px 10px;
-  border-radius: 2px;
+  padding: 2px 4px;
+  font-size: 1em;
+  vertical-align: middle;
 }

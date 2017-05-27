@@ -526,7 +526,7 @@ export function cocktailshakersort(arr, options) {
   }
 
   // BEGIN COCKTAILSHAKERSORT
-  let nRight = length;
+  let nRight = offset + length;
   let nLeft = offset;
   do {
     let m = nLeft, swaps = false;
