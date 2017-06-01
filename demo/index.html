@@ -17,6 +17,7 @@
           <option value="color">Color Wheel</option>
           <option value="line">Line</option>
           <option value="grayscale">Grayscale Wheel</option>
+          <option value="numbers">Numbers</option>
         </select>
       </label>
       <label>
@@ -217,7 +218,7 @@
       }
       const visualize = document.getElementById("visualize");
       visualize.innerHTML = "";
-      visualize.classList.remove("height", "color", "line", "grayscale", "perspective");
+      visualize.classList.remove("height", "color", "line", "grayscale", "numbers", "perspective");
       visualize.classList.add(mode);
       if (perspective) visualize.classList.add("perspective");
       const children = [];
@@ -228,9 +229,11 @@
         const el = document.createElement("div");
         if (mode === "height") {
           el.libSortTransform = "scaleY(" + (i / count) + ")";
+        } else if (mode === "numbers") {
+          el.innerHTML = "<span>"+((i+"").split("").join("</span><span>"))+"</span>";
         } else if (mode === "line") {
           el.libSortTransform = "translateY(-" + ((i / count * 100) - (1 / count * 100)) + "%) scaleY(" + (1 / count) + ")";
-        } else {
+        } else if (mode === "color" || mode === "grayscale") {
           el.style.width = colorModeWidth + "vh";
           el.style.borderLeftWidth = (colorModeWidth / 2) + "vh";
           el.style.borderRightWidth = (colorModeWidth / 2) + "vh";
@@ -251,7 +254,7 @@
         let el = children[i];
         if (mode === "height" || mode === "line") {
           el.style.transform = el.libSortTransform;
-        } else {
+        } else if (mode === "color" || mode === "grayscale") {
           el.libSortTransformRotate = "rotate(" + (colorModeTheta * i) + "deg) scale(.35)";
           el.style.transform = el.libSortTransformRotate;
           el.style.borderTopColor = el.libSortColor;
@@ -259,6 +262,13 @@
         frag.appendChild(el);
       }
       visualize.appendChild(frag);
+      if (mode === "numbers") {
+        const numberWidth = children[0].offsetWidth+"px";
+        for (let i = 0; i < children.length; i++) {
+          let el = children[i];
+          el.style.fontSize = numberWidth;
+        }
+      }
       LibSort[sort](children, {
         maxDelta,
         switchLimit,
@@ -294,7 +304,11 @@
               b.libSortTransform = temp;
               a.style.transform = a.libSortTransform;
               b.style.transform = b.libSortTransform;
-            } else {
+            } else if (mode === "numbers") {
+            	const temp = a.innerHTML;
+              a.innerHTML = b.innerHTML;
+              b.innerHTML = temp;
+            } else if (mode === "color" || mode === "grayscale") {
               const temp = a.libSortColor;
               a.libSortColor = b.libSortColor;
               b.libSortColor = temp;
@@ -322,13 +336,16 @@
             return () => {
               if (mode === "height" || mode === "line") {
                 element.style.transform = change.libSortTransform;
-              } else {
+              } else if (mode === "numbers") {
+                element.innerHTML = change.libSortInnerHTML;
+              } else if (mode === "color" || mode === "grayscale") {
                 element.style.borderTopColor = change.libSortColor;
               }
             }
           })(visualize.children[index], {
             libSortTransform: element.libSortTransform,
-            libSortColor: element.libSortColor
+            libSortColor: element.libSortColor,
+            libSortInnerHTML: element.innerHTML
           }), Math.floor(delay / 2));
           runInTime(((element) => {
             return () => {

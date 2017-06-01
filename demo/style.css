@@ -67,22 +67,38 @@ h2 {
   overflow: hidden;
   box-sizing: content-box;
 }
-#visualize div {
+#visualize > div {
   background: #ccc;
   flex-grow: 1;
   transform-origin: bottom;
+  color: #333;
 }
-#visualize.height div, #visualize.line div {
+#visualize.numbers {
+  align-items: center;
+}
+#visualize.numbers > div {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-direction: column;
+  overflow: hidden;
+  flex-basis: 100%;
+  background: transparent;
+  color: #ccc;
+  font-family: monospace;
+}
+#visualize.height > div, #visualize.line > div {
   height: 100%;
   box-shadow: inset -1px -1px 2px 0px rgba(0,0,0,0.1);
 }
-#visualize.line div {
+#visualize.line > div {
   background: #fff;
 }
 /*#visualize.color div::before,
 #visualize.grayscale div::before,*/
-#visualize.color div,
-#visualize.grayscale div {
+#visualize.color > div,
+#visualize.grayscale > div {
   height: 0;
   position: absolute;
   left: 50%;
@@ -94,31 +110,14 @@ h2 {
   border-top-style: solid;
   box-sizing: border-box;
 }
-#visualize.height div.compare,
-#visualize.line div.compare {
-  background-color: #f9ff87;
-}
-#visualize.color div.compare {
-  border-top-style: groove;
-}
-#visualize.grayscale div.compare {
-  border-top-style: groove;
-}
-#visualize.height div.swap,
-#visualize.line div.swap {
-  background-color: #ffa0a0;
-}
-#visualize.color div.swap {
-  border-top-style: inset;
-}
-#visualize.grayscale div.swap {
-  border-top-width: 105vh;
-}
-#visualize.height div.sorted,
-#visualize.line div.sorted {
+#visualize.height > div.sorted,
+#visualize.line > div.sorted {
   background-color: #a6ff8c;
 }
-#visualize.color div.sorted {
+#visualize.numbers > div.sorted {
+  color: #a6ff8c;
+}
+#visualize.color > div.sorted {
   border-top-width: 99vh;
 }
 /*#visualize.color div.sorted::before {
@@ -128,8 +127,34 @@ h2 {
   border-left-width: 0;
   border-top: 1vh solid #a6ff8c;
 }*/
-#visualize.grayscale div.sorted {
+#visualize.grayscale > div.sorted {
   border-top-width: 99vh;
+}
+#visualize.height > div.compare,
+#visualize.line > div.compare {
+  background-color: #f9ff87;
+}
+#visualize.numbers > div.compare {
+  color: #f9ff87;
+}
+#visualize.color > div.compare {
+  border-top-style: groove;
+}
+#visualize.grayscale > div.compare {
+  border-top-style: groove;
+}
+#visualize.height > div.swap,
+#visualize.line > div.swap {
+  background-color: #ffa0a0;
+}
+#visualize.numbers > div.swap {
+  color: #ffa0a0;
+}
+#visualize.color > div.swap {
+  border-top-style: inset;
+}
+#visualize.grayscale > div.swap {
+  border-top-width: 105vh;
 }
 
 /* Totally crazy styles. */
