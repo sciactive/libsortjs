@@ -14,12 +14,19 @@
         Mode:
         <select id="visualizeMode">
           <option value="height">Bar</option>
-          <option value="color">Color Wheel</option>
           <option value="line">Line</option>
-          <option value="grayscale">Grayscale Wheel</option>
+          <option value="color">Color Wheel</option>
+          <option value="grayscale">Gray Wheel</option>
           <option value="numbers">Numbers</option>
         </select>
       </label>
+      <select id="visualizeType">
+        <option value="shuffled">Shuffled</option>
+        <option value="sorted">Sorted</option>
+        <option value="nearly">Nearly</option>
+        <option value="reversed">Reversed</option>
+        <option value="random">Random</option>
+      </select>
       <label>
         Perspective: <input type="checkbox" id="visualizePerspective" />
       </label>
@@ -38,7 +45,7 @@
           <option value="shellsort">Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
-          <option value="cocktailshakersort">Cocktail Shaker Sort</option>
+          <option value="cocktailshakersort">Cocktail Sort</option>
           <option value="bubblesort">Bubble Sort</option>
           <option value="bogosort">Bogosort</option>
           <option value="bogobogosort">Bogobogosort</option>
@@ -62,17 +69,11 @@
           <option value="shellsort" selected>Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
-          <option value="cocktailshakersort">Cocktail Shaker Sort</option>
+          <option value="cocktailshakersort">Cocktail Sort</option>
           <option value="bubblesort">Bubble Sort</option>
           <option value="bogosort">Bogosort</option>
           <option value="bogobogosort">Bogobogosort</option>
         </select>
-      </label>
-      <label>
-        Shuffle: <input type="checkbox" id="visualizeShuffle" checked />
-      </label>
-      <label>
-        Reverse: <input type="checkbox" id="visualizeReverse" />
       </label>
       <button onclick="doVisualize()">GO</button>
     </div>
@@ -102,7 +103,7 @@
           <option value="shellsort">Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
-          <option value="cocktailshakersort">Cocktail Shaker Sort</option>
+          <option value="cocktailshakersort">Cocktail Sort</option>
           <option value="bubblesort">Bubble Sort</option>
           <option value="bogosort">Bogosort</option>
           <option value="bogobogosort">Bogobogosort</option>
@@ -121,7 +122,7 @@
           <option value="shellsort" selected>Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
-          <option value="cocktailshakersort">Cocktail Shaker Sort</option>
+          <option value="cocktailshakersort">Cocktail Sort</option>
           <option value="bubblesort">Bubble Sort</option>
           <option value="bogosort">Bogosort</option>
           <option value="bogobogosort">Bogobogosort</option>
@@ -137,7 +138,7 @@
           <option value="shellsort">Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
-          <option value="cocktailshakersort">Cocktail Shaker Sort</option>
+          <option value="cocktailshakersort">Cocktail Sort</option>
           <option value="bubblesort">Bubble Sort</option>
           <option value="bogosort">Bogosort</option>
           <option value="bogobogosort">Bogobogosort</option>
@@ -156,7 +157,7 @@
           <option value="shellsort" selected>Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
-          <option value="cocktailshakersort">Cocktail Shaker Sort</option>
+          <option value="cocktailshakersort">Cocktail Sort</option>
           <option value="bubblesort">Bubble Sort</option>
           <option value="bogosort">Bogosort</option>
           <option value="bogobogosort">Bogobogosort</option>
@@ -187,17 +188,19 @@
     // console.log(quicksort([1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]));
 
     function doVisualize() {
+      // Reset any current animation.
+      runInTime(() => {}, 0, true);
+
       const sort = document.getElementById("visualizeSort").value;
 
       const mode = document.getElementById("visualizeMode").value;
+      const type = document.getElementById("visualizeType").value;
       const perspective = document.getElementById("visualizePerspective").checked;
       const count = parseInt(document.getElementById("visualizeElements").value);
       const maxDelta = parseInt(document.getElementById("visualizeMaxDelta").value);
       const delay = parseInt(document.getElementById("visualizeDelay").value);
       const switchLimit = parseInt(document.getElementById("visualizeSwitchLimit").value);
       const switchFunction = document.getElementById("visualizeSwitchFunction").value;
-      const shuffled = document.getElementById("visualizeShuffle").checked;
-      const reversed = document.getElementById("visualizeReverse").checked;
 
       document.getElementById("visualizeStatSort").textContent = document.querySelector("#visualizeSort [value=" + sort + "]").textContent;
 
@@ -227,28 +230,46 @@
       const colorModeWidth = (Math.tan((colorModeTheta * Math.PI/180) / 2) * /* height of element */ 100 * 2) /* (1 + (Math.log(count + 1) / Math.E) * .1) /* a little extra to prevent moire */;
       for (let i = 1; i <= count; i++) {
         const el = document.createElement("div");
+        const val = type !== "random" ? i : (Math.ceil(Math.random() * count));
         if (mode === "height") {
-          el.libSortTransform = "scaleY(" + (i / count) + ")";
+          el.libSortTransform = "scaleY(" + (val / count) + ")";
         } else if (mode === "numbers") {
-          el.innerHTML = "<span>"+((i+"").split("").join("</span><span>"))+"</span>";
+          el.innerHTML = "<span>"+((val+"").split("").join("</span><span>"))+"</span>";
         } else if (mode === "line") {
-          el.libSortTransform = "translateY(-" + ((i / count * 100) - (1 / count * 100)) + "%) scaleY(" + (1 / count) + ")";
+          el.libSortTransform = "translateY(-" + ((val / count * 100) - (1 / count * 100)) + "%) scaleY(" + (1 / count) + ")";
         } else if (mode === "color" || mode === "grayscale") {
           el.style.width = colorModeWidth + "vh";
           el.style.borderLeftWidth = (colorModeWidth / 2) + "vh";
           el.style.borderRightWidth = (colorModeWidth / 2) + "vh";
           el.style.marginLeft = (colorModeWidth / 2 * -1) + "vh";
           if (mode === "color") {
-            el.libSortColor = "hsl(" + (i / count * 360) + ", 100%, 58%)";
+            el.libSortColor = "hsl(" + (val / count * 360) + ", 100%, 58%)";
           } else {
-            el.libSortColor = "hsl(0, 0%, " + (i / count * 100) + "%)";
+            el.libSortColor = "hsl(0, 0%, " + (val / count * 100) + "%)";
           }
         }
-        el.libSortIndex = i;
+        el.libSortIndex = val;
         children.push(el);
       }
-      if (shuffled) shuffle(children);
-      if (reversed) children.reverse();
+      switch (type) {
+        case "shuffled":
+          shuffle(children);
+          break;
+        case "nearly":
+          shuffle(children);
+          LibSort.quicksort(children, {
+            compareFunction: function(a, b) {
+              if (a.libSortIndex < b.libSortIndex) return -1;
+              if (a.libSortIndex > b.libSortIndex) return 1;
+              return 0;
+            },
+            maxDelta: Math.max(Math.min(Math.round(count / 20), 8), 1)
+          });
+          break;
+        case "reversed":
+          children.reverse()
+          break;
+      }
       const frag = document.createDocumentFragment();
       for (let i = 0; i < children.length; i++) {
         let el = children[i];
@@ -366,6 +387,9 @@
     }
 
     function doCompare() {
+      // Reset any current animation.
+      runInTime(() => {}, 0, true);
+
       const sort1 = document.getElementById("compareSort1").value;
       const sort2 = document.getElementById("compareSort2").value;
       const count = parseInt(document.getElementById("compareElements").value);
@@ -492,9 +516,18 @@
     }
 
     let timePromise = Promise.resolve();
-    function runInTime(fn, time) {
+    let willReset = false;
+    function runInTime(fn, time, reset) {
       if (!time) time = 1;
+      if (reset) willReset = true;
       timePromise = timePromise.then(() => {
+        if (willReset) {
+          if (reset) {
+            willReset = false;
+          } else {
+            return false;
+          }
+        }
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             resolve(fn());

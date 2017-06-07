@@ -112,6 +112,10 @@ export function quicksort(arr, options, recursing) {
         while (curIndex < lastIndex) {
         	// Compare the item with the last index.
         	const compare = compareFunction(arr[lastIndex], pivot);
+          // Make sure the list is not just fully equal.
+          if (compare !== 0) {
+          	everythingIsEqual = false;
+          }
           if (compare <= 0) {
             swapFunction(arr, curIndex, lastIndex);
             if (compare < 0) curIndex++;
@@ -133,7 +137,9 @@ export function quicksort(arr, options, recursing) {
   if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(curIndex, curIndex + 1));
 
   // If everything is equal, then we're done.
-  if (!everythingIsEqual) {
+  if (everythingIsEqual) {
+    if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
+  } else{
     // Let's see if we need to go deeper.
     const lengthSmallSide = curIndex - offset;
     if ((maxDelta > -1 && lengthSmallSide > maxDelta + 1) ||
@@ -262,37 +268,38 @@ export function heapsort(arr, options) {
   // BEGIN HEAPSORT
   function sort() {
     buildMaxHeap();
-    for (let i = length - 1; i > 0; i--) {
-      swapFunction(arr, offset, offset + i);
+    for (let i = length - 1; i >= 0; i--) {
+      if (offset !== offset + i) swapFunction(arr, offset, offset + i);
       if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset + i, offset + i + 1));
       length--;
-      heapify(0);
+      heapify(1);
     }
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + 1));
   }
 
   function buildMaxHeap() {
-    for (let i = Math.floor((length - 1) / 2); i >= 0; i--) {
-      heapify(i);
+    for (let i = Math.floor(length / 2); i >= 0; i--) {
+      heapify(i+1);
     }
   }
 
   function heapify(i) {
+    // This functions needs to act like the array is 1 indexed.
     const left = i * 2;
     const right = left + 1;
     let max;
 
-    if ((left <= length - 1) && compareFunction(arr[offset + left], arr[offset + i]) > 0) {
+    if ((left <= length) && compareFunction(arr[offset + left - 1], arr[offset + i - 1]) > 0) {
       max = left;
     } else {
       max = i;
     }
-    if ((right <= length - 1) && compareFunction(arr[offset + right], arr[offset + max]) > 0) {
+    if ((right <= length) && compareFunction(arr[offset + right - 1], arr[offset + max - 1]) > 0) {
       max = right;
     }
 
     if (max !== i) {
-      swapFunction(arr, offset + i, offset + max);
+      swapFunction(arr, offset + i - 1, offset + max - 1);
       heapify(max);
     }
   }
