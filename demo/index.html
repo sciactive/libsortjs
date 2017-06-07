@@ -31,7 +31,7 @@
         Perspective: <input type="checkbox" id="visualizePerspective" />
       </label>
       <label>
-      Delay: <input type="number" id="visualizeDelay" min="0" value="0" />
+      Delay: <input type="number" id="visualizeDelay" min="0" value="10" />
       </label>
       <label>
         Sort:
@@ -195,7 +195,7 @@
 
     function doVisualize() {
       // Reset any current animation.
-      runInTime(() => {}, 0, true);
+      cancelAnimations();
 
       const sort = document.getElementById("visualizeSort").value;
 
@@ -302,13 +302,13 @@
         switchFunction: LibSort[switchFunction],
         compareFunction: (a, b) => {
           let aOrig, bOrig;
-          runInTime(() => {
+          animateFrame(() => {
             a.classList.add("compare");
             b.classList.add("compare");
             document.getElementById("visualizeStatComparisons").textContent =
               parseInt(document.getElementById("visualizeStatComparisons").textContent) + 1;
           });
-          runInTime(() => {
+          animateFrame(() => {
             a.classList.remove("compare");
             b.classList.remove("compare");
           }, delay);
@@ -318,13 +318,13 @@
         },
         swapFunction: (arr, index1, index2) => {
           let a = arr[index1], b = arr[index2], aOrig, bOrig;
-          runInTime(() => {
+          animateFrame(() => {
             a.classList.add("swap");
             b.classList.add("swap");
             document.getElementById("visualizeStatSwaps").textContent =
               parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
           });
-          runInTime(() => {
+          animateFrame(() => {
             if (mode === "height" || mode === "line") {
             	const temp = a.libSortTransform;
               a.libSortTransform = b.libSortTransform;
@@ -343,7 +343,7 @@
               b.style.borderTopColor = b.libSortColor;
             }
           }, Math.floor(delay / 2));
-          runInTime(() => {
+          animateFrame(() => {
             a.classList.remove("swap");
             b.classList.remove("swap");
           }, Math.floor(delay / 2));
@@ -352,14 +352,14 @@
           arr[index2].libSortIndex = temp;
         },
         insertFunction: (arr, index, element) => {
-          runInTime(((element) => {
+          animateFrame(((element) => {
             return () => {
               visualize.children[index].classList.add("swap");
               document.getElementById("visualizeStatSwaps").textContent =
                 parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
             }
           })(visualize.children[index]));
-          runInTime(((element, change) => {
+          animateFrame(((element, change) => {
             return () => {
               if (mode === "height" || mode === "line") {
                 element.style.transform = change.libSortTransform;
@@ -374,7 +374,7 @@
             libSortColor: element.libSortColor,
             libSortInnerHTML: element.innerHTML
           }), Math.floor(delay / 2));
-          runInTime(((element) => {
+          animateFrame(((element) => {
             return () => {
               visualize.children[index].classList.remove("swap");
             }
@@ -384,9 +384,9 @@
         sortedCallbackFunction: (arr) => {
           if (sort === 'mergesort') {
             const elements = _.map(arr, (element) => visualize.children[children.indexOf(element)]);
-            runInTime(() => _.forEach(elements, (element) => element.classList.add("sorted")));
+            animateFrame(() => _.forEach(elements, (element) => element.classList.add("sorted")));
           } else {
-            runInTime(() => _.forEach(arr, (el) => el.classList.add("sorted")));
+            animateFrame(() => _.forEach(arr, (el) => el.classList.add("sorted")));
           }
         }
       });
@@ -394,7 +394,7 @@
 
     function doCompare() {
       // Reset any current animation.
-      runInTime(() => {}, 0, true);
+      cancelAnimations();
 
       const sort1 = document.getElementById("compareSort1").value;
       const sort2 = document.getElementById("compareSort2").value;
@@ -445,13 +445,13 @@
       }
 
       let promises = [];
-      runInTime(() => log("\n\n# Pre-sorted array", "sort1"));
+      animateFrame(() => log("\n\n# Pre-sorted array", "sort1"), 1);
       for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), false, false, "sort1")));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), false, false, "sort1"), 1));
       }
-      runInTime(() => log("\n\n# Pre-sorted array", "sort2"));
+      animateFrame(() => log("\n\n# Pre-sorted array", "sort2"), 1);
       for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), false, false, "sort2")));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), false, false, "sort2"), 1));
       }
       Promise.all(promises).then((values) => {
         let equality = true;
@@ -469,13 +469,13 @@
       });
 
       promises = [];
-      runInTime(() => log("\n\n# Shuffled array", "sort1"));
+      animateFrame(() => log("\n\n# Shuffled array", "sort1"), 1);
       for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), true, false, "sort1")));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), true, false, "sort1"), 1));
       }
-      runInTime(() => log("\n\n# Shuffled array", "sort2"));
+      animateFrame(() => log("\n\n# Shuffled array", "sort2"), 1);
       for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), true, false, "sort2")));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), true, false, "sort2"), 1));
       }
       Promise.all(promises).then((values) => {
         let equality = true;
@@ -493,13 +493,13 @@
       });
 
       promises = [];
-      runInTime(() => log("\n\n# Reversed array", "sort1"));
+      animateFrame(() => log("\n\n# Reversed array", "sort1"), 1);
       for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), false, true, "sort1")));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), false, true, "sort1"), 1));
       }
-      runInTime(() => log("\n\n# Reversed array", "sort2"));
+      animateFrame(() => log("\n\n# Reversed array", "sort2"), 1);
       for (let i = 0; i < rounds; i++) {
-        promises.push(runInTime(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), false, true, "sort2")));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), false, true, "sort2"), 1));
       }
       Promise.all(promises).then((values) => {
         let equality = true;
@@ -521,26 +521,44 @@
       });
     }
 
-    let timePromise = Promise.resolve();
-    let willReset = false;
-    function runInTime(fn, time, reset) {
-      if (!time) time = 1;
-      if (reset) willReset = true;
-      timePromise = timePromise.then(() => {
-        if (willReset) {
-          if (reset) {
-            willReset = false;
+    let currentTime = 0, proceed = true, requests = [];
+    function animateFrame(fn, time, reset) {
+      let resolver;
+      const promise = new Promise((resolve) => resolver = resolve);
+      if (!time) time = 0;
+      const runTime = currentTime + time;
+      currentTime += time;
+      if (runTime > 0) {
+        let start, imWaiting = false;
+        (function timePass (timestamp) {
+          if (!start) start = timestamp;
+          if (proceed || imWaiting) {
+            if (timestamp - start >= runTime) {
+              proceed = true;
+              resolver(fn());
+            } else {
+              proceed = false;
+              imWaiting = true;
+              requests.push(requestAnimationFrame(timePass));
+            }
           } else {
-            return false;
+            requests.push(requestAnimationFrame(timePass));
           }
-        }
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            resolve(fn());
-          }, time);
-        });
-      });
-      return timePromise;
+        })();
+      } else {
+        requests.push(requestAnimationFrame(() => {
+          resolver(fn());
+        }));
+      }
+      return promise;
+    }
+    function cancelAnimations() {
+      for (let i = 0; i < requests.length; i++) {
+        cancelAnimationFrame(requests[i]);
+      }
+      currentTime = 0;
+      proceed = true;
+      requests = [];
     }
 
     function logHeader(msg) {
