@@ -42,7 +42,7 @@
           <option value="quicksort">Quicksort</option>
           <option value="mergesort">Merge Sort</option>
           <option value="heapsort">Heapsort</option>
-          <option value="redblacksort">Red Black Sort</option>
+          <option value="redblacksort">Red-Black Sort</option>
           <option value="shellsort">Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
@@ -68,7 +68,7 @@
           <option value="quicksort">Quicksort</option>
           <option value="mergesort">Merge Sort</option>
           <option value="heapsort">Heapsort</option>
-          <option value="redblacksort">Red Black Sort</option>
+          <option value="redblacksort">Red-Black Sort</option>
           <option value="shellsort" selected>Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
@@ -104,7 +104,7 @@
           <option value="quicksort">Quicksort</option>
           <option value="mergesort">Merge Sort</option>
           <option value="heapsort">Heapsort</option>
-          <option value="redblacksort">Red Black Sort</option>
+          <option value="redblacksort">Red-Black Sort</option>
           <option value="shellsort">Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
@@ -125,7 +125,7 @@
           <option value="quicksort">Quicksort</option>
           <option value="mergesort">Merge Sort</option>
           <option value="heapsort">Heapsort</option>
-          <option value="redblacksort">Red Black Sort</option>
+          <option value="redblacksort">Red-Black Sort</option>
           <option value="shellsort" selected>Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
@@ -143,7 +143,7 @@
           <option value="quicksort">Quicksort</option>
           <option value="mergesort">Merge Sort</option>
           <option value="heapsort">Heapsort</option>
-          <option value="redblacksort">Red Black Sort</option>
+          <option value="redblacksort">Red-Black Sort</option>
           <option value="shellsort">Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
@@ -164,7 +164,7 @@
           <option value="quicksort">Quicksort</option>
           <option value="mergesort">Merge Sort</option>
           <option value="heapsort">Heapsort</option>
-          <option value="redblacksort">Red Black Sort</option>
+          <option value="redblacksort">Red-Black Sort</option>
           <option value="shellsort" selected>Shellsort</option>
           <option value="selectionsort">Selection Sort</option>
           <option value="insertionsort">Insertion Sort</option>
@@ -226,7 +226,7 @@
       document.getElementById("visualizeStatComparisons").textContent = "0";
       document.getElementById("visualizeStatSwaps").textContent = "0";
 
-      if (sort === 'mergesort') {
+      if (sort === 'mergesort' || sort === 'redblacksort') {
         document.getElementById("visualizeStatsOperationLabel").textContent = "Inserts";
       } else {
         document.getElementById("visualizeStatsOperationLabel").textContent = "Swaps";
@@ -307,14 +307,17 @@
         switchLimit,
         switchFunction: LibSort[switchFunction],
         compareFunction: (a, b) => {
-          let aOrig, bOrig;
+          let index1 = children.indexOf(a),
+              index2 = children.indexOf(b);
           animateFrame(() => {
+            let a = visualize.children[index1], b = visualize.children[index2];
             a.classList.add("compare");
             b.classList.add("compare");
             document.getElementById("visualizeStatComparisons").textContent =
               parseInt(document.getElementById("visualizeStatComparisons").textContent) + 1;
           });
           animateFrame(() => {
+            let a = visualize.children[index1], b = visualize.children[index2];
             a.classList.remove("compare");
             b.classList.remove("compare");
           }, delay);
@@ -323,14 +326,15 @@
           return 0;
         },
         swapFunction: (arr, index1, index2) => {
-          let a = arr[index1], b = arr[index2], aOrig, bOrig;
           animateFrame(() => {
+            let a = visualize.children[index1], b = visualize.children[index2];
             a.classList.add("swap");
             b.classList.add("swap");
             document.getElementById("visualizeStatSwaps").textContent =
               parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
           });
           animateFrame(() => {
+            let a = visualize.children[index1], b = visualize.children[index2];
             if (mode === "height" || mode === "line") {
             	const temp = a.libSortTransform;
               a.libSortTransform = b.libSortTransform;
@@ -350,21 +354,20 @@
             }
           }, Math.floor(delay / 2));
           animateFrame(() => {
+            let a = visualize.children[index1], b = visualize.children[index2];
             a.classList.remove("swap");
             b.classList.remove("swap");
           }, Math.floor(delay / 2));
-        	const temp = arr[index1].libSortIndex;
-          arr[index1].libSortIndex = arr[index2].libSortIndex;
-          arr[index2].libSortIndex = temp;
+        	const temp = arr[index1];
+          arr[index1] = arr[index2];
+          arr[index2] = temp;
         },
         insertFunction: (arr, index, element) => {
-          animateFrame(((element) => {
-            return () => {
-              visualize.children[index].classList.add("swap");
-              document.getElementById("visualizeStatSwaps").textContent =
-                parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
-            }
-          })(visualize.children[index]));
+          animateFrame(() => {
+            visualize.children[index].classList.add("swap");
+            document.getElementById("visualizeStatSwaps").textContent =
+              parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
+          });
           animateFrame(((element, change) => {
             return () => {
               if (mode === "height" || mode === "line") {
@@ -380,20 +383,14 @@
             libSortColor: element.libSortColor,
             libSortInnerHTML: element.innerHTML
           }), Math.floor(delay / 2));
-          animateFrame(((element) => {
-            return () => {
-              visualize.children[index].classList.remove("swap");
-            }
-          })(visualize.children[index]), Math.floor(delay / 2));
+          animateFrame(() => {
+            visualize.children[index].classList.remove("swap");
+          }, Math.floor(delay / 2));
           arr[index] = element;
         },
         sortedCallbackFunction: (arr) => {
-          if (sort === 'mergesort') {
-            const elements = _.map(arr, (element) => visualize.children[children.indexOf(element)]);
-            animateFrame(() => _.forEach(elements, (element) => element.classList.add("sorted")));
-          } else {
-            animateFrame(() => _.forEach(arr, (el) => el.classList.add("sorted")));
-          }
+          const elements = _.map(arr, (element) => visualize.children[children.indexOf(element)]);
+          animateFrame(() => _.forEach(elements, (element) => element.classList.add("sorted")));
         }
       });
     }

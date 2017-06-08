@@ -29,6 +29,7 @@ export function quicksort(arr, options, recursing) {
       maxDelta = 0,
       compareFunction = defaultCompareFunction,
       swapFunction = defaultSwapFunction,
+      insertFunction = defaultInsertFunction, // Only used to pass to switchFunction.
       sortedCallbackFunction = null,
       switchLimit = 0,
       switchFunction = insertionsort;
@@ -40,6 +41,7 @@ export function quicksort(arr, options, recursing) {
     if (options.maxDelta !== undefined) maxDelta = options.maxDelta;
   	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
   	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
+  	if (options.insertFunction !== undefined) insertFunction = options.insertFunction;
   	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
   	if (options.switchLimit !== undefined) switchLimit = options.switchLimit;
   	if (options.switchFunction !== undefined) switchFunction = options.switchFunction;
@@ -146,9 +148,9 @@ export function quicksort(arr, options, recursing) {
         (maxDelta === -1 && lengthSmallSide > switchLimit)) {
       // We need to sort the small side of the list.
       if (lengthSmallSide > switchLimit) {
-        quicksort(arr, {offset: offset, length: lengthSmallSide, maxDelta, compareFunction, swapFunction, sortedCallbackFunction, switchLimit, switchFunction}, true);
+        quicksort(arr, {offset: offset, length: lengthSmallSide, maxDelta, compareFunction, swapFunction, insertFunction, sortedCallbackFunction, switchLimit, switchFunction}, true);
       } else {
-        switchFunction(arr, {offset: offset, length: lengthSmallSide, maxDelta, compareFunction, swapFunction, sortedCallbackFunction});
+        switchFunction(arr, {offset: offset, length: lengthSmallSide, maxDelta, compareFunction, swapFunction, insertFunction, sortedCallbackFunction});
       }
     } else if (maxDelta > -1 && sortedCallbackFunction) {
       sortedCallbackFunction(arr.slice(offset, curIndex));
@@ -158,9 +160,9 @@ export function quicksort(arr, options, recursing) {
         (maxDelta === -1 && lengthBigSide > switchLimit)) {
       // We need to sort the big side of the list.
       if (lengthBigSide > switchLimit) {
-        quicksort(arr, {offset: curIndex + 1, length: lengthBigSide, maxDelta, compareFunction, swapFunction, sortedCallbackFunction, switchLimit, switchFunction}, true);
+        quicksort(arr, {offset: curIndex + 1, length: lengthBigSide, maxDelta, compareFunction, swapFunction, insertFunction, sortedCallbackFunction, switchLimit, switchFunction}, true);
       } else {
-        switchFunction(arr, {offset: curIndex + 1, length: lengthBigSide, maxDelta, compareFunction, swapFunction, sortedCallbackFunction});
+        switchFunction(arr, {offset: curIndex + 1, length: lengthBigSide, maxDelta, compareFunction, swapFunction, insertFunction, sortedCallbackFunction});
       }
     } else if (maxDelta > -1 && sortedCallbackFunction) {
       sortedCallbackFunction(arr.slice(curIndex + 1, offset + length));
