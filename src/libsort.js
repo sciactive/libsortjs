@@ -310,10 +310,9 @@ export function heapsort(arr, options) {
   return arr;
 }
 
-export function redblacksort(arr, options, recursing) {
+export function redblacksort(arr, options) {
   let offset = 0,
       length = arr.length - offset,
-      maxDelta = 0, // I think maxDelta here is working more like a "percentage off".
       compareFunction = defaultCompareFunction,
       insertFunction = defaultInsertFunction,
       sortedCallbackFunction = null;
@@ -322,7 +321,6 @@ export function redblacksort(arr, options, recursing) {
   } else if (options !== undefined) {
   	if (options.offset !== undefined) offset = options.offset;
     if (options.length !== undefined) length = options.length;
-    if (options.maxDelta !== undefined) maxDelta = options.maxDelta;
   	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
   	if (options.insertFunction !== undefined) insertFunction = options.insertFunction;
   	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
@@ -339,7 +337,6 @@ export function redblacksort(arr, options, recursing) {
   // Now go through the tree from left to right and insert the children.
   let node = tree.first(), i = offset;
   while (node) {
-    console.log(node.value.libSortIndex);
     insertFunction(arr, i, node.value);
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(i, i + 1));
     i++;
@@ -691,12 +688,12 @@ export class RedBlackTree {
   static from(arr, compareFunction) {
     const tree = new RedBlackTree(compareFunction);
     for (let i = 0; i < arr.length; i++) {
-      tree.add(arr[i]);
+      tree.insert(arr[i]);
     }
     return tree;
   }
 
-  add(value) {
+  insert(value) {
     if (!this.root) {
       return this.root = new RedBlackTreeNode({value});
     }
@@ -722,9 +719,11 @@ export class RedBlackTree {
       }
     }
     this.repaint(node);
+    return node;
   }
 
-  repaint(node) {
+  repaint(target) {
+    let node = target;
     if (!node.parent) {
       node.setBlack();
       return;
@@ -736,19 +735,25 @@ export class RedBlackTree {
         node.grandparent.setRed();
         this.repaint(node.grandparent);
       } else {
-        if (node.grandparent && node === node.parent.rightChild && node.parent === node.grandparent.leftChild) {
-          node.rotateLeft();
-          node = node.leftChild;
-        } else if (node.grandparent && node === node.parent.leftChild && node.parent === node.grandparent.rightChild) {
-          node.rotateRight();
+        if (node.grandparent && node === node.parent.leftChild && node.parent === node.grandparent.rightChild) {
+          node.parent.rotateRight();
           node = node.rightChild;
+        } else if (node.grandparent && node === node.parent.rightChild && node.parent === node.grandparent.leftChild) {
+          node.parent.rotateLeft();
+          node = node.leftChild;
         }
         node.parent.setBlack();
         if (node.grandparent) {
           node.grandparent.setRed();
           if (node === node.parent.leftChild) {
+            if (this.root === node.grandparent) {
+              this.root = node.grandparent.leftChild;
+            }
             node.grandparent.rotateRight();
           } else {
+            if (this.root === node.grandparent) {
+              this.root = node.grandparent.rightChild;
+            }
             node.grandparent.rotateLeft();
           }
         }
@@ -757,7 +762,7 @@ export class RedBlackTree {
   }
 
   first() {
-    if (!this.root) return null;
+    if (!this.root) return undefined;
     return this.root.leftMost();
   }
 }
@@ -772,26 +777,40 @@ export class RedBlackTreeNode {
   }
 
   rotateLeft() {
-    const leftUncle = this.grandparent.leftChild, left = this.leftChild;
-    this.grandparent.leftChild = this;
-    this.leftChild = leftUncle;
-    leftUncle.rightChild = left;
-    this.parent = this.grandparent;
-    leftUncle.parent = this;
-    if (left) {
-      left.parent = leftUncle;
+    const parent = this.parent, right = this.rightChild;
+    if (!right) return;
+    if (parent) {
+      if (parent.rightChild === this) {
+        parent.rightChild = right;
+      } else {
+        parent.leftChild = right;
+      }
+    }
+    this.rightChild = right.leftChild;
+    right.leftChild = this;
+    this.parent = right;
+    right.parent = parent;
+    if (this.rightChild) {
+      this.rightChild.parent = this;
     }
   }
 
   rotateRight() {
-    const rightUncle = this.grandparent.rightChild, right = this.rightChild;
-    this.grandparent.rightChild = this;
-    this.rightChild = rightUncle;
-    rightUncle.leftChild = right;
-    this.parent = this.grandparent;
-    rightUncle.parent = this;
-    if (right) {
-      right.parent = rightUncle;
+    const parent = this.parent, left = this.leftChild;
+    if (!left) return;
+    if (parent) {
+      if (parent.leftChild === this) {
+        parent.leftChild = left;
+      } else {
+        parent.rightChild = left;
+      }
+    }
+    this.leftChild = left.rightChild;
+    left.rightChild = this;
+    this.parent = left;
+    left.parent = parent;
+    if (this.leftChild) {
+      this.leftChild.parent = this;
     }
   }
 
@@ -825,7 +844,7 @@ export class RedBlackTreeNode {
     if (grandparent.leftChild === this.parent) {
       return grandparent.rightChild;
     } else {
-      return grandparent.rightChild;
+      return grandparent.leftChild;
     }
   }
 
@@ -833,6 +852,14 @@ export class RedBlackTreeNode {
     let node = this;
     while (node.leftChild) {
       node = node.leftChild;
+    }
+    return node;
+  }
+
+  rightMost() {
+    let node = this;
+    while (node.rightChild) {
+      node = node.rightChild;
     }
     return node;
   }
