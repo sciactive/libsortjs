@@ -310,6 +310,46 @@ export function heapsort(arr, options) {
   return arr;
 }
 
+export function redblacksort(arr, options, recursing) {
+  let offset = 0,
+      length = arr.length - offset,
+      maxDelta = 0, // I think maxDelta here is working more like a "percentage off".
+      compareFunction = defaultCompareFunction,
+      insertFunction = defaultInsertFunction,
+      sortedCallbackFunction = null;
+  if (typeof options === "function") {
+    compareFunction = options;
+  } else if (options !== undefined) {
+  	if (options.offset !== undefined) offset = options.offset;
+    if (options.length !== undefined) length = options.length;
+    if (options.maxDelta !== undefined) maxDelta = options.maxDelta;
+  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
+  	if (options.insertFunction !== undefined) insertFunction = options.insertFunction;
+  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+  }
+
+  if (length <= 1) {
+    if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
+    return arr;
+  }
+
+  // BEGIN REDBLACKSORT
+  // Build a Red-Black Tree out of the array slice.
+  const tree = RedBlackTree.from(arr.slice(offset, offset + length), compareFunction);
+  // Now go through the tree from left to right and insert the children.
+  let node = tree.first(), i = offset;
+  while (node) {
+    console.log(node.value.libSortIndex);
+    insertFunction(arr, i, node.value);
+    if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(i, i + 1));
+    i++;
+    node = node.next();
+  }
+  // END REDBLACKSORT
+
+  return arr;
+}
+
 export function shellsort(arr, options) {
   let offset = 0,
       length = arr.length - offset,
@@ -640,4 +680,172 @@ export function bogobogosort(arr, options) {
   // END BOGOBOGOSORT
 
   return arr;
+}
+
+export class RedBlackTree {
+  constructor(compareFunction) {
+    this.root = null;
+    this.compareFunction = compareFunction ? compareFunction : defaultCompareFunction;
+  }
+
+  static from(arr, compareFunction) {
+    const tree = new RedBlackTree(compareFunction);
+    for (let i = 0; i < arr.length; i++) {
+      tree.add(arr[i]);
+    }
+    return tree;
+  }
+
+  add(value) {
+    if (!this.root) {
+      return this.root = new RedBlackTreeNode({value});
+    }
+    let current = this.root;
+    let node;
+    while (true) {
+      if (this.compareFunction(value, current.value) < 0) {
+        if (current.leftChild) {
+          current = current.leftChild;
+        } else {
+          node = new RedBlackTreeNode({value, parent: current, red: true});
+          current.leftChild = node;
+          break;
+        }
+      } else {
+        if (current.rightChild) {
+          current = current.rightChild;
+        } else {
+          node = new RedBlackTreeNode({value, parent: current, red: true});
+          current.rightChild = node;
+          break;
+        }
+      }
+    }
+    this.repaint(node);
+  }
+
+  repaint(node) {
+    if (!node.parent) {
+      node.setBlack();
+      return;
+    }
+    if (node.parent.isRed()) {
+      if (node.uncle && node.uncle.isRed()) {
+        node.parent.setBlack();
+        node.uncle.setBlack();
+        node.grandparent.setRed();
+        this.repaint(node.grandparent);
+      } else {
+        if (node.grandparent && node === node.parent.rightChild && node.parent === node.grandparent.leftChild) {
+          node.rotateLeft();
+          node = node.leftChild;
+        } else if (node.grandparent && node === node.parent.leftChild && node.parent === node.grandparent.rightChild) {
+          node.rotateRight();
+          node = node.rightChild;
+        }
+        node.parent.setBlack();
+        if (node.grandparent) {
+          node.grandparent.setRed();
+          if (node === node.parent.leftChild) {
+            node.grandparent.rotateRight();
+          } else {
+            node.grandparent.rotateLeft();
+          }
+        }
+      }
+    }
+  }
+
+  first() {
+    if (!this.root) return null;
+    return this.root.leftMost();
+  }
+}
+
+export class RedBlackTreeNode {
+  constructor({value, parent, leftChild, rightChild, red}) {
+    this.value = value;
+    this.parent = parent;
+    this.leftChild = leftChild;
+    this.rightChild = rightChild;
+    this.red = !!red;
+  }
+
+  rotateLeft() {
+    const leftUncle = this.grandparent.leftChild, left = this.leftChild;
+    this.grandparent.leftChild = this;
+    this.leftChild = leftUncle;
+    leftUncle.rightChild = left;
+    this.parent = this.grandparent;
+    leftUncle.parent = this;
+    if (left) {
+      left.parent = leftUncle;
+    }
+  }
+
+  rotateRight() {
+    const rightUncle = this.grandparent.rightChild, right = this.rightChild;
+    this.grandparent.rightChild = this;
+    this.rightChild = rightUncle;
+    rightUncle.leftChild = right;
+    this.parent = this.grandparent;
+    rightUncle.parent = this;
+    if (right) {
+      right.parent = rightUncle;
+    }
+  }
+
+  setRed() {
+    this.red = true;
+  }
+
+  setBlack() {
+    this.red = false;
+  }
+
+  isRoot() {
+    return !this.parent;
+  }
+
+  isRed() {
+    return this.red;
+  }
+
+  isBlack() {
+    return !this.red;
+  }
+
+  get grandparent() {
+    return this.parent ? this.parent.parent : undefined;
+  }
+
+  get uncle() {
+    const grandparent = this.grandparent;
+    if (!grandparent) return undefined;
+    if (grandparent.leftChild === this.parent) {
+      return grandparent.rightChild;
+    } else {
+      return grandparent.rightChild;
+    }
+  }
+
+  leftMost() {
+    let node = this;
+    while (node.leftChild) {
+      node = node.leftChild;
+    }
+    return node;
+  }
+
+  next() {
+    if (this.rightChild) {
+      return this.rightChild.leftMost();
+    } else {
+      let node = this;
+      while (node.parent && node === node.parent.rightChild) {
+        node = node.parent;
+      }
+      return node.parent;
+    }
+  }
 }
