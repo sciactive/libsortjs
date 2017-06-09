@@ -23,29 +23,21 @@ export function defaultInsertFunction(arr, index, element) {
   arr[index] = element;
 }
 
-export function quicksort(arr, options, recursing) {
-  let offset = 0,
-      length = arr.length - offset,
-      maxDelta = 0,
-      compareFunction = defaultCompareFunction,
-      swapFunction = defaultSwapFunction,
-      insertFunction = defaultInsertFunction, // Only used to pass to switchFunction.
-      sortedCallbackFunction = null,
-      switchLimit = 0,
-      switchFunction = insertionsort;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-    if (options.maxDelta !== undefined) maxDelta = options.maxDelta;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
-  	if (options.insertFunction !== undefined) insertFunction = options.insertFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
-  	if (options.switchLimit !== undefined) switchLimit = options.switchLimit;
-  	if (options.switchFunction !== undefined) switchFunction = options.switchFunction;
-  }
+export function quicksort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    maxDelta = 0,
+    compareFunction = defaultCompareFunction,
+    swapFunction = defaultSwapFunction,
+    insertFunction = defaultInsertFunction, // Only used to pass to switchFunction.
+    sortedCallbackFunction = null,
+    switchLimit = 0,
+    switchFunction = insertionsort
+  },
+  recursing
+) {
   if (length <= maxDelta + 1) {
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
     return arr;
@@ -170,7 +162,7 @@ export function quicksort(arr, options, recursing) {
   }
 
   if (!recursing && maxDelta === -1) {
-    switchFunction(arr, options);
+    switchFunction(arr, {offset, length, maxDelta, compareFunction, swapFunction, insertFunction, sortedCallbackFunction});
   }
 
   // END QUICKSORT
@@ -178,24 +170,18 @@ export function quicksort(arr, options, recursing) {
   return arr;
 }
 
-export function mergesort(arr, options, recursing) {
-  let offset = 0,
-      length = arr.length - offset,
-      maxDelta = 0, // I think maxDelta here is working more like a "percentage off".
-      compareFunction = defaultCompareFunction,
-      insertFunction = defaultInsertFunction,
-      sortedCallbackFunction = null;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-    if (options.maxDelta !== undefined) maxDelta = options.maxDelta;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.insertFunction !== undefined) insertFunction = options.insertFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
-  }
-
+export function mergesort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    maxDelta = 0, // I think maxDelta here is working more like a "percentage off".
+    compareFunction = defaultCompareFunction,
+    insertFunction = defaultInsertFunction,
+    sortedCallbackFunction = null
+  },
+  recursing
+) {
   if (length <= 1) {
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
     return arr;
@@ -251,22 +237,16 @@ export function mergesort(arr, options, recursing) {
   return arr;
 }
 
-export function heapsort(arr, options) {
-  let offset = 0,
-      length = arr.length - offset,
-      compareFunction = defaultCompareFunction,
-      swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+export function heapsort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    compareFunction = defaultCompareFunction,
+    swapFunction = defaultSwapFunction,
+    sortedCallbackFunction = null
   }
-
+) {
   // BEGIN HEAPSORT
   function sort() {
     buildMaxHeap();
@@ -312,22 +292,16 @@ export function heapsort(arr, options) {
   return arr;
 }
 
-export function redblacksort(arr, options) {
-  let offset = 0,
-      length = arr.length - offset,
-      compareFunction = defaultCompareFunction,
-      insertFunction = defaultInsertFunction,
-      sortedCallbackFunction = null;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.insertFunction !== undefined) insertFunction = options.insertFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+export function redblacksort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    compareFunction = defaultCompareFunction,
+    insertFunction = defaultInsertFunction,
+    sortedCallbackFunction = null
   }
-
+) {
   if (length <= 1) {
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
     return arr;
@@ -349,26 +323,19 @@ export function redblacksort(arr, options) {
   return arr;
 }
 
-export function shellsort(arr, options) {
-  let offset = 0,
-      length = arr.length - offset,
-      compareFunction = defaultCompareFunction,
-      swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null,
-      switchLimit = 0,
-      switchFunction = insertionsort;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
-  	if (options.switchLimit !== undefined) switchLimit = options.switchLimit;
-  	if (options.switchFunction !== undefined) switchFunction = options.switchFunction;
+export function shellsort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    compareFunction = defaultCompareFunction,
+    swapFunction = defaultSwapFunction,
+    insertFunction = defaultInsertFunction,
+    sortedCallbackFunction = null,
+    switchLimit = 0,
+    switchFunction = insertionsort
   }
-
+) {
   // BEGIN SHELLSORT
   let gapDenominator = 2, gap = Math.floor(length / gapDenominator);
   while (gap > switchLimit) {
@@ -383,7 +350,7 @@ export function shellsort(arr, options) {
     gap = Math.floor(length / gapDenominator);
   }
   if (switchLimit > 0) {
-    switchFunction(arr, options);
+    switchFunction(arr, {offset, length, compareFunction, swapFunction, insertFunction, sortedCallbackFunction, switchLimit, switchFunction});
   }
   if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
   // END SHELLSORT
@@ -391,22 +358,16 @@ export function shellsort(arr, options) {
   return arr;
 }
 
-export function selectionsort(arr, options) {
-  let offset = 0,
-      length = arr.length - offset,
-      compareFunction = defaultCompareFunction,
-      swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+export function selectionsort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    compareFunction = defaultCompareFunction,
+    swapFunction = defaultSwapFunction,
+    sortedCallbackFunction = null
   }
-
+) {
   // BEGIN SELECTIONSORT
   for (let i = offset; i < offset + length; i++) {
     let min = i;
@@ -425,22 +386,16 @@ export function selectionsort(arr, options) {
   return arr;
 }
 
-export function insertionsort(arr, options) {
-  let offset = 0,
-      length = arr.length - offset,
-      compareFunction = defaultCompareFunction,
-      swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+export function insertionsort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    compareFunction = defaultCompareFunction,
+    swapFunction = defaultSwapFunction,
+    sortedCallbackFunction = null
   }
-
+) {
   // BEGIN INSERTIONSORT
   for (let i = offset + 1; i < offset + length; i++) {
     let k = i;
@@ -455,22 +410,16 @@ export function insertionsort(arr, options) {
   return arr;
 }
 
-export function oddevensort(arr, options) {
-  let offset = 0,
-      length = arr.length - offset,
-      compareFunction = defaultCompareFunction,
-      swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+export function oddevensort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    compareFunction = defaultCompareFunction,
+    swapFunction = defaultSwapFunction,
+    sortedCallbackFunction = null
   }
-
+) {
   // BEGIN ODDEVENSORT
   let i = 0, swaps = false;
   do {
@@ -489,22 +438,16 @@ export function oddevensort(arr, options) {
   return arr;
 }
 
-export function cocktailshakersort(arr, options) {
-  let offset = 0,
-      length = arr.length - offset,
-      compareFunction = defaultCompareFunction,
-      swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+export function cocktailshakersort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    compareFunction = defaultCompareFunction,
+    swapFunction = defaultSwapFunction,
+    sortedCallbackFunction = null
   }
-
+) {
   // BEGIN COCKTAILSHAKERSORT
   let nRight = offset + length;
   let nLeft = offset;
@@ -543,22 +486,16 @@ export function cocktailshakersort(arr, options) {
   return arr;
 }
 
-export function bubblesort(arr, options) {
-  let offset = 0,
-      length = arr.length - offset,
-      compareFunction = defaultCompareFunction,
-      swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+export function bubblesort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    compareFunction = defaultCompareFunction,
+    swapFunction = defaultSwapFunction,
+    sortedCallbackFunction = null
   }
-
+) {
   // BEGIN BUBBLESORT
   let n = length;
   do {
@@ -582,22 +519,16 @@ export function bubblesort(arr, options) {
   return arr;
 }
 
-export function bogosort(arr, options) {
-  let offset = 0,
-      length = arr.length - offset,
-      compareFunction = defaultCompareFunction,
-      swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+export function bogosort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    compareFunction = defaultCompareFunction,
+    swapFunction = defaultSwapFunction,
+    sortedCallbackFunction = null
   }
-
+) {
   // BEGIN BOGOSORT
   function isArraySorted() {
     for (let i = offset + 1; i < offset + length; i++) {
@@ -630,22 +561,16 @@ export function bogosort(arr, options) {
   return arr;
 }
 
-export function bogobogosort(arr, options) {
-  let offset = 0,
-      length = arr.length - offset,
-      compareFunction = defaultCompareFunction,
-      swapFunction = defaultSwapFunction,
-      sortedCallbackFunction = null;
-  if (typeof options === "function") {
-    compareFunction = options;
-  } else if (options !== undefined) {
-  	if (options.offset !== undefined) offset = options.offset;
-    if (options.length !== undefined) length = options.length;
-  	if (options.compareFunction !== undefined) compareFunction = options.compareFunction;
-  	if (options.swapFunction !== undefined) swapFunction = options.swapFunction;
-  	if (options.sortedCallbackFunction !== undefined) sortedCallbackFunction = options.sortedCallbackFunction;
+export function bogobogosort(
+  arr,
+  {
+    offset = 0,
+    length = arr.length - offset,
+    compareFunction = defaultCompareFunction,
+    swapFunction = defaultSwapFunction,
+    sortedCallbackFunction = null
   }
-
+) {
   // BEGIN BOGOBOGOSORT
   function isArraySorted(end) {
     for (let i = offset + 1; i < offset + end + 1; i++) {
