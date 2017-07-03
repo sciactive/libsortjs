@@ -185,4 +185,5 @@ button, input, select {
   padding: 2px 4px;
   font-size: 1em;
   vertical-align: middle;
+  border-radius: 0;
 }
