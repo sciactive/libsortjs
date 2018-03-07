@@ -1,5 +1,5 @@
 module.exports = {
-    entry: "./src/libsort.js",
+    entry: "./src/index.js",
     output: {
       library: "LibSort",
       path: __dirname,

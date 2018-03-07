@@ -2,13 +2,13 @@
   "name": "libsortjs",
   "version": "0.0.1-dev",
   "description": "A JavaScript sorting library.",
-  "main": "src/libsort.js",
+  "main": "src/index.js",
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-loader": "^7.0.0",
-    "babel-preset-env": "^1.5.1",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-stage-3": "^6.24.1",
-    "webpack": "^2.5.1"
+    "webpack": "^4.1.0"
   },
   "scripts": {
     "build-old": "babel -d lib/ src/",

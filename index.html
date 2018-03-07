@@ -2,9 +2,200 @@
 <html>
 <head>
   <title>LibSort.js</title>
-  <link rel="stylesheet" type="text/css" href="style.css" />
-  <script type="text/javascript" src="../lib/libsort.js"></script>
+  <script type="text/javascript" src="lib/libsort.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+
+  <style type="text/css">
+    html, body {
+      font-family: "Arial Narrow", Arial, sans-serif;
+      color: #333;
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+    }
+    section {
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    h2 {
+      margin: 0 0 1em;
+    }
+    #outputHeader {
+      flex: 100%;
+      text-align: center;
+    }
+    #outputContainer, #visualizeContainer {
+      font-size: 1.1em;
+      margin-top: 20px;
+      color: #ccc;
+    }
+    #output, #visualizeContainer {
+      border: 1px solid #ccc;
+      background: #333;
+    }
+    #output {
+      display: inline-flex;
+      width: auto;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+    #output pre {
+      margin: 20px 25px;
+    }
+    #visualizeSection {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      align-items: stretch;
+      box-sizing: border-box;
+    }
+    #visualizeContainer {
+      position: relative;
+      flex-grow: 1;
+    }
+    #visualizeStats {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-size: .85em;
+    }
+    #visualize {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 2px;
+      overflow: hidden;
+      box-sizing: content-box;
+    }
+    #visualize > div {
+      background: #ccc;
+      flex-grow: 1;
+      transform-origin: bottom;
+      color: #333;
+    }
+    #visualize.numbers {
+      align-items: center;
+    }
+    #visualize.numbers > div {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-direction: column;
+      overflow: hidden;
+      flex-basis: 100%;
+      background: transparent;
+      color: #ccc;
+      font-family: monospace;
+    }
+    #visualize.height > div, #visualize.line > div {
+      height: 100%;
+      box-shadow: inset -1px -1px 2px 0px rgba(0,0,0,0.1);
+    }
+    #visualize.line > div {
+      background: #fff;
+    }
+    /*#visualize.color div::before,
+    #visualize.grayscale div::before,*/
+    #visualize.color > div,
+    #visualize.grayscale > div {
+      height: 0;
+      position: absolute;
+      left: 50%;
+      bottom: 50%;
+      border-left: 1.570796vh solid transparent;
+      border-right: 1.570796vh solid transparent;
+      background-color: transparent;
+      border-top-width: 100vh;
+      border-top-style: solid;
+      box-sizing: border-box;
+    }
+    #visualize.height > div.sorted,
+    #visualize.line > div.sorted {
+      background-color: #a6ff8c;
+    }
+    #visualize.numbers > div.sorted {
+      color: #a6ff8c;
+    }
+    #visualize.color > div.sorted {
+      border-top-width: 99vh;
+    }
+    /*#visualize.color div.sorted::before {
+      content: " ";
+      position: absolute;
+      top: -100vh;
+      border-left-width: 0;
+      border-top: 1vh solid #a6ff8c;
+    }*/
+    #visualize.grayscale > div.sorted {
+      border-top-width: 99vh;
+    }
+    #visualize.height > div.compare,
+    #visualize.line > div.compare {
+      background-color: #f9ff87;
+    }
+    #visualize.numbers > div.compare {
+      color: #f9ff87;
+    }
+    #visualize.color > div.compare {
+      border-top-style: groove;
+    }
+    #visualize.grayscale > div.compare {
+      border-top-style: groove;
+    }
+    #visualize.height > div.swap,
+    #visualize.line > div.swap {
+      background-color: #ffa0a0;
+    }
+    #visualize.numbers > div.swap {
+      color: #ffa0a0;
+    }
+    #visualize.color > div.swap {
+      border-top-style: inset;
+    }
+    #visualize.grayscale > div.swap {
+      border-top-width: 105vh;
+    }
+
+    /* Totally crazy styles. */
+    #visualizeContainer {
+      perspective: 80vh;
+      overflow: hidden;
+    }
+    #visualize.perspective {
+      transform: translateY(-10vh) scaleY(2) scaleX(2) rotateX(70deg) rotateY(15deg) rotateZ(-45deg);
+    }
+
+    input[type=number] {
+      max-width: 40px;
+    }
+    button:disabled, input:disabled, select:disabled {
+      background: #666;
+      color: #000;
+      cursor: not-allowed;
+    }
+    #compareElements, #visualizeElements {
+      max-width: 100px;
+    }
+    button, input, select {
+      background: #ccc;
+      color: #333;
+      border: 1px solid #333;
+      font-weight: bold;
+      padding: 2px 4px;
+      font-size: 1em;
+      vertical-align: middle;
+      border-radius: 0;
+    }
+  </style>
 </head>
 <body>
   <section id="visualizeSection">
@@ -16,7 +207,9 @@
           <option value="height">Bar</option>
           <option value="line">Line</option>
           <option value="color">Color Wheel</option>
+          <option value="colorTilt">Color Wheel Tilt</option>
           <option value="grayscale">Gray Wheel</option>
+          <option value="grayscaleTilt">Gray Wheel Tilt</option>
           <option value="numbers">Numbers</option>
         </select>
       </label>
@@ -28,10 +221,10 @@
         <option value="random">Random</option>
       </select>
       <label>
-        Perspective: <input type="checkbox" id="visualizePerspective" />
+        Sync: <input type="checkbox" id="visualizeSync" onchange="document.getElementById('visualizeDelay').disabled = this.checked" />
       </label>
       <label>
-      Delay: <input type="number" id="visualizeDelay" min="0" value="10" />
+        Delay: <input type="number" id="visualizeDelay" min="1" value="10" />
       </label>
       <label>
         Sort:
@@ -205,11 +398,15 @@
 
       const sort = document.getElementById("visualizeSort").value;
 
-      const mode = document.getElementById("visualizeMode").value;
+      let mode = document.getElementById("visualizeMode").value;
       const type = document.getElementById("visualizeType").value;
-      const perspective = document.getElementById("visualizePerspective").checked;
+      const perspective = mode.slice(-4) === 'Tilt';
+      if (perspective) {
+        mode = mode.slice(0, -4);
+      }
       const count = parseInt(document.getElementById("visualizeElements").value);
       const maxDelta = parseInt(document.getElementById("visualizeMaxDelta").value);
+      const sync = !!document.getElementById("visualizeSync").checked;
       const delay = parseInt(document.getElementById("visualizeDelay").value);
       const switchLimit = parseInt(document.getElementById("visualizeSwitchLimit").value);
       const switchFunction = document.getElementById("visualizeSwitchFunction").value;
@@ -219,7 +416,7 @@
       document.getElementById("visualizeStatSwitchContainer").style.display = (switchLimit > 0 && !document.getElementById("visualizeSwitchLimit").disabled) ? 'inline' : 'none';
       document.getElementById("visualizeStatSwitchLimit").textContent = switchLimit;
       document.getElementById("visualizeStatSwitchSort").textContent = document.querySelector("#visualizeSwitchFunction [value=" + switchFunction + "]").textContent;
-      document.getElementById("visualizeStatDelayContainer").style.display = delay > 0 ? 'inline' : 'none';
+      document.getElementById("visualizeStatDelayContainer").style.display = ((delay > 0) && !sync) ? 'inline' : 'none';
       document.getElementById("visualizeStatDelay").textContent = delay;
 
       document.getElementById("visualizeStatLength").textContent = count;
@@ -235,7 +432,9 @@
       visualize.innerHTML = "";
       visualize.classList.remove("height", "color", "line", "grayscale", "numbers", "perspective");
       visualize.classList.add(mode);
-      if (perspective) visualize.classList.add("perspective");
+      if (perspective) {
+        visualize.classList.add("perspective");
+      }
       const children = [];
       const colorModeTheta = (1 / count * 360);
       const colorModeDistanceBetweenPoints = ((1 / count * 100 * Math.PI) * 2);
@@ -308,19 +507,28 @@
         switchFunction: LibSort[switchFunction],
         compareFunction: (a, b) => {
           let index1 = children.indexOf(a),
-              index2 = children.indexOf(b);
+              index2 = children.indexOf(b),
+              insideA, insideB;
           animateFrame(() => {
-            let a = visualize.children[index1], b = visualize.children[index2];
-            a.classList.add("compare");
-            b.classList.add("compare");
+            if (index1 !== -1) {
+              insideA = visualize.children[index1];
+              insideA.classList.add("compare");
+            }
+            if (index2 !== -1) {
+              insideB = visualize.children[index2];
+              insideB.classList.add("compare");
+            }
             document.getElementById("visualizeStatComparisons").textContent =
               parseInt(document.getElementById("visualizeStatComparisons").textContent) + 1;
-          });
+          }, {sync});
           animateFrame(() => {
-            let a = visualize.children[index1], b = visualize.children[index2];
-            a.classList.remove("compare");
-            b.classList.remove("compare");
-          }, delay);
+            if (insideA) {
+              insideA.classList.remove("compare");
+            }
+            if (insideB) {
+              insideB.classList.remove("compare");
+            }
+          }, {sync, delay});
           if (a.libSortIndex < b.libSortIndex) return -1;
           if (a.libSortIndex > b.libSortIndex) return 1;
           return 0;
@@ -332,7 +540,7 @@
             b.classList.add("swap");
             document.getElementById("visualizeStatSwaps").textContent =
               parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
-          });
+          }, {sync});
           animateFrame(() => {
             let a = visualize.children[index1], b = visualize.children[index2];
             if (mode === "height" || mode === "line") {
@@ -352,12 +560,12 @@
               a.style.borderTopColor = a.libSortColor;
               b.style.borderTopColor = b.libSortColor;
             }
-          }, Math.floor(delay / 2));
+          }, {sync, delay: Math.floor(delay / 2)});
           animateFrame(() => {
             let a = visualize.children[index1], b = visualize.children[index2];
             a.classList.remove("swap");
             b.classList.remove("swap");
-          }, Math.floor(delay / 2));
+          }, {sync, delay: Math.floor(delay / 2)});
         	const temp = arr[index1];
           arr[index1] = arr[index2];
           arr[index2] = temp;
@@ -367,7 +575,7 @@
             visualize.children[index].classList.add("swap");
             document.getElementById("visualizeStatSwaps").textContent =
               parseInt(document.getElementById("visualizeStatSwaps").textContent) + 1;
-          });
+          }, {sync});
           animateFrame(((element, change) => {
             return () => {
               if (mode === "height" || mode === "line") {
@@ -382,15 +590,15 @@
             libSortTransform: element.libSortTransform,
             libSortColor: element.libSortColor,
             libSortInnerHTML: element.innerHTML
-          }), Math.floor(delay / 2));
+          }), {sync, delay: Math.floor(delay / 2)});
           animateFrame(() => {
             visualize.children[index].classList.remove("swap");
-          }, Math.floor(delay / 2));
+          }, {sync, delay: Math.floor(delay / 2)});
           arr[index] = element;
         },
         sortedCallbackFunction: (arr) => {
           const elements = _.map(arr, (element) => visualize.children[children.indexOf(element)]);
-          animateFrame(() => _.forEach(elements, (element) => element.classList.add("sorted")));
+          animateFrame(() => _.forEach(elements, (element) => element.classList.add("sorted")), {sync});
         }
       });
     }
@@ -448,13 +656,13 @@
       }
 
       let promises = [];
-      animateFrame(() => log("\n\n# Pre-sorted array", "sort1"), 1);
+      animateFrame(() => log("\n\n# Pre-sorted array", "sort1"), {delay: 1});
       for (let i = 0; i < rounds; i++) {
-        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), false, false, "sort1"), 1));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), false, false, "sort1"), {delay: 1}));
       }
-      animateFrame(() => log("\n\n# Pre-sorted array", "sort2"), 1);
+      animateFrame(() => log("\n\n# Pre-sorted array", "sort2"), {delay: 1});
       for (let i = 0; i < rounds; i++) {
-        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), false, false, "sort2"), 1));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), false, false, "sort2"), {delay: 1}));
       }
       Promise.all(promises).then((values) => {
         let equality = true;
@@ -472,13 +680,13 @@
       });
 
       promises = [];
-      animateFrame(() => log("\n\n# Shuffled array", "sort1"), 1);
+      animateFrame(() => log("\n\n# Shuffled array", "sort1"), {delay: 1});
       for (let i = 0; i < rounds; i++) {
-        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), true, false, "sort1"), 1));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), true, false, "sort1"), {delay: 1}));
       }
-      animateFrame(() => log("\n\n# Shuffled array", "sort2"), 1);
+      animateFrame(() => log("\n\n# Shuffled array", "sort2"), {delay: 1});
       for (let i = 0; i < rounds; i++) {
-        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), true, false, "sort2"), 1));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), true, false, "sort2"), {delay: 1}));
       }
       Promise.all(promises).then((values) => {
         let equality = true;
@@ -496,13 +704,13 @@
       });
 
       promises = [];
-      animateFrame(() => log("\n\n# Reversed array", "sort1"), 1);
+      animateFrame(() => log("\n\n# Reversed array", "sort1"), {delay: 1});
       for (let i = 0; i < rounds; i++) {
-        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), false, true, "sort1"), 1));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort1, switchLimit1, switchFunction1, arr, c), false, true, "sort1"), {delay: 1}));
       }
-      animateFrame(() => log("\n\n# Reversed array", "sort2"), 1);
+      animateFrame(() => log("\n\n# Reversed array", "sort2"), {delay: 1});
       for (let i = 0; i < rounds; i++) {
-        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), false, true, "sort2"), 1));
+        promises.push(animateFrame(() => benchmarkSort((arr, c) => callSort(sort2, switchLimit2, switchFunction2, arr, c), false, true, "sort2"), {delay: 1}));
       }
       Promise.all(promises).then((values) => {
         let equality = true;
@@ -524,14 +732,23 @@
       });
     }
 
-    let currentTime = 0, proceed = true, requests = [];
-    function animateFrame(fn, time, reset) {
+    let currentTime = 0, proceed = true, requests = [], syncQueue = [];
+    function animateFrame(fn, {sync, delay, reset}) {
       let resolver;
       const promise = new Promise((resolve) => resolver = resolve);
-      if (!time) time = 0;
-      const runTime = currentTime + time;
-      currentTime += time;
-      if (runTime > 0) {
+      if (!delay) {
+        delay = 0;
+      }
+      const runTime = currentTime + delay;
+      currentTime += delay;
+      if (sync) {
+        syncQueue.push({delay, fn: () => {
+          resolver(fn());
+        }});
+        if (syncQueue.length === 1) {
+          requestAnimationFrame(() => runSync());
+        }
+      } else /*if (runTime > 0)*/ {
         let start, imWaiting = false;
         (function timePass (timestamp) {
           if (!start) start = timestamp;
@@ -548,12 +765,23 @@
             requests.push(requestAnimationFrame(timePass));
           }
         })();
-      } else {
+      } /*else {
         requests.push(requestAnimationFrame(() => {
           resolver(fn());
         }));
-      }
+      }*/
       return promise;
+    }
+    function runSync() {
+      requestAnimationFrame(() => {
+        do {
+          syncQueue[0].fn();
+          syncQueue.splice(0, 1);
+        } while (syncQueue.length && syncQueue[0].delay === 0);
+        if (syncQueue.length) {
+          runSync();
+        }
+      });
     }
     function cancelAnimations() {
       for (let i = 0; i < requests.length; i++) {
