@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
-import defaultCompareFunction from "./defaultCompareFunction";
-import defaultSwapFunction from "./defaultSwapFunction";
-import defaultInsertFunction from "./defaultInsertFunction";
+import defaultCompareFunction from './defaultCompareFunction';
+import defaultSwapFunction from './defaultSwapFunction';
+import defaultInsertFunction from './defaultInsertFunction';
 
-export default function shellsort(
+export default function shellsort (
   arr,
   {
     offset = 0,
@@ -18,7 +18,8 @@ export default function shellsort(
   }
 ) {
   // BEGIN SHELLSORT
-  let gapDenominator = 2, gap = Math.floor(length / gapDenominator);
+  let gapDenominator = 2;
+  let gap = Math.floor(length / gapDenominator);
   while (gap > switchLimit) {
     for (let i = offset + gap; i < offset + length; i++) {
       let k = i;
@@ -30,9 +31,7 @@ export default function shellsort(
     gapDenominator *= 2;
     gap = Math.floor(length / gapDenominator);
   }
-  if (switchLimit > 0) {
-    switchFunction(arr, {offset, length, compareFunction, swapFunction, insertFunction, sortedCallbackFunction, switchLimit, switchFunction});
-  }
+  if (switchLimit > 0) switchFunction(arr, {offset, length, compareFunction, swapFunction, insertFunction, sortedCallbackFunction, switchLimit, switchFunction});
   if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
   // END SHELLSORT
 

@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-import defaultCompareFunction from "./defaultCompareFunction";
-import defaultSwapFunction from "./defaultSwapFunction";
+import defaultCompareFunction from './defaultCompareFunction';
+import defaultSwapFunction from './defaultSwapFunction';
 
-export default function heapsort(
+export default function heapsort (
   arr,
   {
     offset = 0,
@@ -14,7 +14,7 @@ export default function heapsort(
   }
 ) {
   // BEGIN HEAPSORT
-  function sort() {
+  function sort () {
     buildMaxHeap();
     for (let i = length - 1; i >= 0; i--) {
       if (offset !== offset + i) swapFunction(arr, offset, offset + i);
@@ -25,13 +25,11 @@ export default function heapsort(
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + 1));
   }
 
-  function buildMaxHeap() {
-    for (let i = Math.floor(length / 2); i >= 0; i--) {
-      heapify(i+1);
-    }
+  function buildMaxHeap () {
+    for (let i = Math.floor(length / 2); i >= 0; i--) heapify(i + 1);
   }
 
-  function heapify(i) {
+  function heapify (i) {
     // This functions needs to act like the array is 1 indexed.
     const left = i * 2;
     const right = left + 1;

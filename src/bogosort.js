@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-import defaultCompareFunction from "./defaultCompareFunction";
-import defaultSwapFunction from "./defaultSwapFunction";
+import defaultCompareFunction from './defaultCompareFunction';
+import defaultSwapFunction from './defaultSwapFunction';
 
-export default function bogosort(
+export default function bogosort (
   arr,
   {
     offset = 0,
@@ -14,14 +14,14 @@ export default function bogosort(
   }
 ) {
   // BEGIN BOGOSORT
-  function isArraySorted() {
+  function isArraySorted () {
     for (let i = offset + 1; i < offset + length; i++) {
       if (compareFunction(arr[i - 1], arr[i]) > 0) return false;
     }
     return true;
   }
 
-  function shuffle() {
+  function shuffle () {
     let counter = length;
     // While there are elements in the array.
     while (counter > 0) {
@@ -30,15 +30,11 @@ export default function bogosort(
       // Decrease counter by 1.
       counter--;
       // And swap the last element with it.
-      if (offset + counter !== index) {
-        swapFunction(arr, offset + counter, index);
-      }
+      if (offset + counter !== index) swapFunction(arr, offset + counter, index);
     }
   }
 
-  while (!isArraySorted()) {
-    shuffle();
-  };
+  while (!isArraySorted()) shuffle();
   if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(offset, offset + length));
   // END BOGOSORT
 

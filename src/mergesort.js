@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-import defaultCompareFunction from "./defaultCompareFunction";
-import defaultInsertFunction from "./defaultInsertFunction";
+import defaultCompareFunction from './defaultCompareFunction';
+import defaultInsertFunction from './defaultInsertFunction';
 
-export default function mergesort(
+export default function mergesort (
   arr,
   {
     offset = 0,
@@ -23,8 +23,8 @@ export default function mergesort(
   // BEGIN MERGESORT
   // Let's see if we just need to make one quick comparison.
   if (length === 2) {
-  	if (compareFunction(arr[offset], arr[offset + 1]) > 0) {
-    	// Our one element is bigger than its sibling, so swap them.
+    if (compareFunction(arr[offset], arr[offset + 1]) > 0) {
+      // Our one element is bigger than its sibling, so swap them.
       const temp = arr[offset];
       insertFunction(arr, offset, arr[offset + 1]);
       insertFunction(arr, offset + 1, temp);
@@ -40,11 +40,10 @@ export default function mergesort(
   }
   const left = arr.slice(offset, offset + mid);
   const right = arr.slice(offset + mid, offset + length);
-  let lIndex = 0, rIndex = 0, aIndex = 0;
+  let lIndex = 0;
+  let rIndex = 0;
+  let aIndex = 0;
   while (lIndex < left.length && rIndex < right.length) {
-    if (left[lIndex] === undefined || right[rIndex] === undefined) {
-      debugger;
-    }
     const compare = compareFunction(left[lIndex], right[rIndex]);
     if (compare <= 0) {
       insertFunction(arr, offset + aIndex, left[lIndex]);

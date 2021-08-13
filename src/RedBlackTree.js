@@ -1,15 +1,15 @@
-"use strict";
+'use strict';
 
-import RedBlackTreeNode from "./RedBlackTreeNode";
-import defaultCompareFunction from "./defaultCompareFunction";
+import RedBlackTreeNode from './RedBlackTreeNode';
+import defaultCompareFunction from './defaultCompareFunction';
 
 export default class RedBlackTree {
-  constructor(compareFunction) {
+  constructor (compareFunction) {
     this.root = null;
-    this.compareFunction = compareFunction ? compareFunction : defaultCompareFunction;
+    this.compareFunction = compareFunction || defaultCompareFunction;
   }
 
-  static from(arr, compareFunction) {
+  static from (arr, compareFunction) {
     const tree = new RedBlackTree(compareFunction);
     for (let i = 0; i < arr.length; i++) {
       tree.insert(arr[i]);
@@ -17,9 +17,10 @@ export default class RedBlackTree {
     return tree;
   }
 
-  insert(value) {
+  insert (value) {
     if (!this.root) {
-      return this.root = new RedBlackTreeNode({value});
+      this.root = new RedBlackTreeNode({value});
+      return this.root;
     }
     let current = this.root;
     let node;
@@ -46,7 +47,7 @@ export default class RedBlackTree {
     return node;
   }
 
-  repaint(target) {
+  repaint (target) {
     let node = target;
     if (!node.parent) {
       node.setBlack();
@@ -70,14 +71,10 @@ export default class RedBlackTree {
         if (node.grandparent) {
           node.grandparent.setRed();
           if (node === node.parent.leftChild) {
-            if (this.root === node.grandparent) {
-              this.root = node.grandparent.leftChild;
-            }
+            if (this.root === node.grandparent) this.root = node.grandparent.leftChild;
             node.grandparent.rotateRight();
           } else {
-            if (this.root === node.grandparent) {
-              this.root = node.grandparent.rightChild;
-            }
+            if (this.root === node.grandparent) this.root = node.grandparent.rightChild;
             node.grandparent.rotateLeft();
           }
         }
@@ -85,7 +82,7 @@ export default class RedBlackTree {
     }
   }
 
-  first() {
+  first () {
     if (!this.root) return undefined;
     return this.root.leftMost();
   }

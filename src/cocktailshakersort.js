@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-import defaultCompareFunction from "./defaultCompareFunction";
-import defaultSwapFunction from "./defaultSwapFunction";
+import defaultCompareFunction from './defaultCompareFunction';
+import defaultSwapFunction from './defaultSwapFunction';
 
-export default function cocktailshakersort(
+export default function cocktailshakersort (
   arr,
   {
     offset = 0,
@@ -17,7 +17,8 @@ export default function cocktailshakersort(
   let nRight = offset + length;
   let nLeft = offset;
   do {
-    let m = nLeft, swaps = false;
+    let m = nLeft;
+    let swaps = false;
     for (let i = m + 1; i < nRight; i++) {
       if (compareFunction(arr[i - 1], arr[i]) > 0) {
         swaps = true;
@@ -45,7 +46,7 @@ export default function cocktailshakersort(
     }
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(nLeft, m + 1));
     nLeft = m + 1;
-  } while (nRight != nLeft);
+  } while (nRight !== nLeft);
   // END COCKTAILSHAKERSORT
 
   return arr;

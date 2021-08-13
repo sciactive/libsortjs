@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-import defaultCompareFunction from "./defaultCompareFunction";
-import defaultSwapFunction from "./defaultSwapFunction";
+import defaultCompareFunction from './defaultCompareFunction';
+import defaultSwapFunction from './defaultSwapFunction';
 
-export default function oddevensort(
+export default function oddevensort (
   arr,
   {
     offset = 0,
@@ -14,7 +14,8 @@ export default function oddevensort(
   }
 ) {
   // BEGIN ODDEVENSORT
-  let i = 0, swaps = false;
+  let i = 0;
+  let swaps = false;
   do {
     if (i % 2) swaps = false;
     for (; i + 1 < length; i += 2) {

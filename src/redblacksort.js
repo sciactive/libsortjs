@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
-import defaultCompareFunction from "./defaultCompareFunction";
-import defaultInsertFunction from "./defaultInsertFunction";
-import RedBlackTree from "./RedBlackTree";
+import defaultCompareFunction from './defaultCompareFunction';
+import defaultInsertFunction from './defaultInsertFunction';
+import RedBlackTree from './RedBlackTree';
 
-export default function redblacksort(
+export default function redblacksort (
   arr,
   {
     offset = 0,
@@ -23,7 +23,8 @@ export default function redblacksort(
   // Build a Red-Black Tree out of the array slice.
   const tree = RedBlackTree.from(arr.slice(offset, offset + length), compareFunction);
   // Now go through the tree from left to right and insert the children.
-  let node = tree.first(), i = offset;
+  let node = tree.first();
+  let i = offset;
   while (node) {
     insertFunction(arr, i, node.value);
     if (sortedCallbackFunction) sortedCallbackFunction(arr.slice(i, i + 1));

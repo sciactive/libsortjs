@@ -1,3 +1,3 @@
-export default function defaultInsertFunction(arr, index, element) {
+export default function defaultInsertFunction (arr, index, element) {
   arr[index] = element;
 }
